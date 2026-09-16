@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-cyan: var(--cyan);
+  --color-violet: var(--violet);
+  --color-success: var(--success);
+}
+
+/* Light Theme (Default) */
+:root {
+  --radius: 0.75rem;
+  color-scheme: light;
+  
+  --background: oklch(0.985 0.003 260); /* Minimal subtle off-white/light-gray */
+  --foreground: oklch(0.15 0.02 260);
+  --card: oklch(1 0 0); /* Pure crisp white card */
+  --card-foreground: oklch(0.15 0.02 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.15 0.02 260);
+  
+  --primary: oklch(0.52 0.22 262); /* Rich Indigo */
+  --primary-foreground: oklch(0.99 0 0);
+  
+  --secondary: oklch(0.94 0.01 260);
+  --secondary-foreground: oklch(0.2 0.02 260);
+  --muted: oklch(0.95 0.005 260);
+  --muted-foreground: oklch(0.48 0.02 260);
+  
+  --accent: oklch(0.94 0.015 260);
+  --accent-foreground: oklch(0.2 0.02 260);
+  
+  --destructive: oklch(0.58 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  
+  --border: oklch(0.90 0.005 260);
+  --input: oklch(0.92 0.005 260);
+  --ring: oklch(0.52 0.22 262);
+  
+  --cyan: oklch(0.55 0.18 240);
+  --violet: oklch(0.54 0.22 290);
+  --success: oklch(0.62 0.18 150);
+
+  --grid-line: rgba(15, 23, 42, 0.045);
+}
+
+/* Dark Theme */
+.dark {
+  color-scheme: dark;
+  
+  --background: oklch(0.12 0.015 260); /* Deep sleek obsidian */
+  --foreground: oklch(0.98 0 0);
+  --card: oklch(0.16 0.015 260);
+  --card-foreground: oklch(0.98 0 0);
+  --popover: oklch(0.16 0.015 260);
+  --popover-foreground: oklch(0.98 0 0);
+  
+  --primary: oklch(0.65 0.2 260); /* Vibrant Indigo */
+  --primary-foreground: oklch(0.99 0 0);
+  
+  --secondary: oklch(0.22 0.015 260);
+  --secondary-foreground: oklch(0.92 0 0);
+  --muted: oklch(0.22 0.015 260);
+  --muted-foreground: oklch(0.65 0.02 260);
+  
+  --accent: oklch(0.24 0.02 260);
+  --accent-foreground: oklch(0.98 0 0);
+  
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  
+  --border: oklch(0.24 0.015 260);
+  --input: oklch(0.22 0.015 260);
+  --ring: oklch(0.65 0.2 260);
+  
+  --cyan: oklch(0.68 0.16 230);
+  --violet: oklch(0.66 0.2 290);
+  --success: oklch(0.7 0.16 150);
+
+  --grid-line: rgba(255, 255, 255, 0.04);
+}
+
+html, body {
+  font-family: var(--font-sans);
+  background-color: var(--background);
+  color: var(--foreground);
+  min-height: 100vh;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  overflow-x: hidden;
+}
+
+.font-mono { font-family: var(--font-mono); }
+
+/* Premium SaaS Cards */
+.glass {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  border-radius: var(--radius);
+}
+
+.dark .glass {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.35);
+}
+
+.glass-strong {
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  border-radius: var(--radius);
+}
+
+.dark .glass-strong {
+  box-shadow: 0 8px 24px -4px rgb(0 0 0 / 0.5);
+}
+
+/* Subtle, barely-noticeable grid pattern with thin lines and large spacing */
+.grid-bg {
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 90% 70% at 50% 10%, black 40%, transparent 95%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 10%, black 40%, transparent 95%);
+}
+
+.glow-cyan { border-left: 3px solid var(--cyan); }
+.glow-violet { border-left: 3px solid var(--violet); }
+.hover-glow:hover { 
+  border-color: var(--primary); 
+  transform: translateY(-2px); 
+}
+.transition-glow { transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Animations */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes blink {
+  0%, 60% { opacity: 1; }
+  61%, 100% { opacity: 0; }
+}
+@keyframes waveform {
+  0%, 100% { transform: scaleY(0.3); }
+  50% { transform: scaleY(1); }
+}
+
+.animate-fade-up { animation: fade-up 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
+.cursor-blink::after { content: '|'; margin-left: 2px; animation: blink 1s step-end infinite; color: var(--primary); }
+
+@layer base {
+  * { border-color: var(--color-border); }
+  body { background-color: var(--color-background); color: var(--color-foreground); }
+  button { cursor: pointer; }
+}
