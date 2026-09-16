@@ -26,8 +26,15 @@ function ClerkBridgeInner({ children }: { children: ReactNode }) {
 export function ClerkAuthProvider({ children }: { children: ReactNode }) {
   const clerkKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY as string | undefined;
 
+  const isConfigured =
+    clerkKey &&
+    clerkKey.startsWith("pk_") &&
+    !clerkKey.includes("your_clerk") &&
+    !clerkKey.includes("placeholder") &&
+    clerkKey.length > 25;
+
   // If a valid Clerk publishable key is provided, wrap in ClerkProvider
-  if (clerkKey && clerkKey.startsWith("pk_")) {
+  if (isConfigured) {
     return (
       <ClerkProvider publishableKey={clerkKey}>
         <ClerkBridgeInner>{children}</ClerkBridgeInner>
