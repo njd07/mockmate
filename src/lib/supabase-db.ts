@@ -17,7 +17,9 @@ export interface SessionRecord {
   clerk_user_id: string;
   domain: string;
   session_type: "interview" | "quiz";
-  score?: Record<string, any>;
+  score?: Record<string, unknown>;
+  feedback?: Record<string, unknown> | Array<unknown>;
+  duration_seconds?: number;
   completed_at?: string;
 }
 
@@ -27,20 +29,37 @@ const memoryStore = {
   sessions: [] as SessionRecord[],
 };
 
-function getSupabaseAdminClient(): SupabaseClient | null {
+// Singleton Supabase admin client cache
+let cachedClient: SupabaseClient | null = null;
+let clientInitialized = false;
+
+export function getSupabaseAdminClient(): SupabaseClient | null {
+  if (clientInitialized) return cachedClient;
+
   const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!url || !key) return null;
+  if (!url || !key) {
+    console.info("[DB:Memory] Supabase credentials not found in env — using in-memory fallback store.");
+    clientInitialized = true;
+    cachedClient = null;
+    return null;
+  }
+
   try {
-    return createClient(url, key, {
-      auth: { persistSession: false },
+    cachedClient = createClient(url, key, {
+      auth: { persistSession: false, autoRefreshToken: false },
     });
+    clientInitialized = true;
+    console.info("[DB:Supabase] Supabase client successfully initialized.");
+    return cachedClient;
   } catch (e) {
     console.warn("[DB] Could not initialize Supabase client:", e);
+    clientInitialized = true;
+    cachedClient = null;
     return null;
   }
 }
@@ -60,7 +79,7 @@ export async function getOrCreateUserProfile(
         .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
-        console.warn("[DB] Supabase get profile warning:", error.message);
+        console.warn("[DB:Supabase] get profile error:", error.message);
       }
 
       if (data) {
@@ -89,7 +108,7 @@ export async function getOrCreateUserProfile(
         return inserted as UserProfile;
       }
     } catch (e) {
-      console.warn("[DB] Supabase operation failed, using memory store:", e);
+      console.warn("[DB:Supabase] getOrCreateUserProfile failed, using memory store:", e);
     }
   }
 
@@ -104,6 +123,7 @@ export async function getOrCreateUserProfile(
       free_sessions_used: 0,
       credits: 3,
       created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
     };
     memoryStore.profiles.set(userId, profile);
   }
@@ -114,7 +134,9 @@ export async function recordCompletedSession(
   userId: string,
   domain: string,
   sessionType: "interview" | "quiz",
-  score?: Record<string, unknown>
+  score?: Record<string, unknown>,
+  feedback?: Record<string, unknown> | Array<unknown>,
+  durationSeconds: number = 0
 ): Promise<UserProfile> {
   const client = getSupabaseAdminClient();
   const sessionEntry: SessionRecord = {
@@ -122,6 +144,8 @@ export async function recordCompletedSession(
     domain,
     session_type: sessionType,
     score,
+    feedback,
+    duration_seconds: durationSeconds,
     completed_at: new Date().toISOString(),
   };
 
@@ -154,7 +178,7 @@ export async function recordCompletedSession(
         if (updated) return updated as UserProfile;
       }
     } catch (e) {
-      console.warn("[DB] Supabase record failed, using memory store:", e);
+      console.warn("[DB:Supabase] recordCompletedSession failed, using memory store:", e);
     }
   }
 
@@ -176,20 +200,24 @@ export async function setUserPlan(
   const client = getSupabaseAdminClient();
   if (client) {
     try {
+      const updateData: Partial<UserProfile> = {
+        plan,
+        updated_at: new Date().toISOString(),
+      };
+      if (stripeCustomerId) {
+        updateData.stripe_customer_id = stripeCustomerId;
+      }
+
       const { data, error } = await client
         .from("user_profiles")
-        .update({
-          plan,
-          ...(stripeCustomerId ? { stripe_customer_id: stripeCustomerId } : {}),
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq("clerk_user_id", userId)
         .select()
         .single();
 
       if (!error && data) return data as UserProfile;
     } catch (e) {
-      console.warn("[DB] Supabase set plan failed, using memory store:", e);
+      console.warn("[DB:Supabase] setUserPlan failed, using memory store:", e);
     }
   }
 
@@ -199,6 +227,32 @@ export async function setUserPlan(
   profile.updated_at = new Date().toISOString();
   memoryStore.profiles.set(userId, profile);
   return profile;
+}
+
+export async function getUserByStripeCustomerId(
+  stripeCustomerId: string
+): Promise<UserProfile | null> {
+  const client = getSupabaseAdminClient();
+  if (client) {
+    try {
+      const { data, error } = await client
+        .from("user_profiles")
+        .select("*")
+        .eq("stripe_customer_id", stripeCustomerId)
+        .maybeSingle();
+
+      if (!error && data) return data as UserProfile;
+    } catch (e) {
+      console.warn("[DB:Supabase] getUserByStripeCustomerId failed:", e);
+    }
+  }
+
+  for (const profile of memoryStore.profiles.values()) {
+    if (profile.stripe_customer_id === stripeCustomerId) {
+      return profile;
+    }
+  }
+  return null;
 }
 
 export async function adjustUserCredits(
@@ -224,7 +278,7 @@ export async function adjustUserCredits(
 
       if (!error && data) return data as UserProfile;
     } catch (e) {
-      console.warn("[DB] Supabase credit adjust failed:", e);
+      console.warn("[DB:Supabase] adjustUserCredits failed:", e);
     }
   }
 
@@ -247,7 +301,7 @@ export async function getUserSessionHistory(userId: string): Promise<SessionReco
 
       if (!error && data) return data as SessionRecord[];
     } catch (e) {
-      console.warn("[DB] Supabase get history failed:", e);
+      console.warn("[DB:Supabase] getUserSessionHistory failed:", e);
     }
   }
 

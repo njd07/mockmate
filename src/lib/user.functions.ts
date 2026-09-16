@@ -21,12 +21,19 @@ const CompleteSessionInput = z.object({
   domain: z.string(),
   sessionType: z.enum(["interview", "quiz"]),
   score: z.record(z.any()).optional(),
+  feedback: z.any().optional(),
+  durationSeconds: z.number().optional(),
 });
 
 const CheckoutInput = z.object({
   userId: z.string(),
   email: z.string().optional(),
   returnUrl: z.string().optional(),
+});
+
+const VerifySessionInput = z.object({
+  sessionId: z.string(),
+  userId: z.string(),
 });
 
 const AdminCreditInput = z.object({
@@ -60,7 +67,9 @@ export const completeSession = createServerFn({ method: "POST" })
       data.userId,
       data.domain,
       data.sessionType,
-      data.score
+      data.score,
+      data.feedback,
+      data.durationSeconds || 0
     );
     return { ok: true as const, profile: updated };
   });
@@ -75,31 +84,48 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
     if (stripeKey && stripeKey.startsWith("sk_")) {
       try {
         const stripe = new Stripe(stripeKey, { apiVersion: "2025-02-24.acacia" as any });
+        const priceId = process.env.STRIPE_PRICE_ID;
+
+        const lineItems = priceId
+          ? [{ price: priceId, quantity: 1 }]
+          : [
+              {
+                price_data: {
+                  currency: "inr",
+                  product_data: {
+                    name: "MockMate Pro",
+                    description:
+                      "Unlimited AI mock interviews, deep speech analytics, and custom feedback",
+                  },
+                  unit_amount: 49900, // ₹499
+                  recurring: { interval: "month" as const },
+                },
+                quantity: 1,
+              },
+            ];
+
         const session = await stripe.checkout.sessions.create({
           payment_method_types: ["card"],
           mode: "subscription",
           client_reference_id: data.userId,
           customer_email: data.email,
-          line_items: [
-            {
-              price_data: {
-                currency: "inr",
-                product_data: {
-                  name: "MockMate Pro",
-                  description: "Unlimited AI mock interviews, deep speech analytics, and custom feedback",
-                },
-                unit_amount: 49900, // ₹499
-                recurring: { interval: "month" },
-              },
-              quantity: 1,
+          line_items: lineItems,
+          metadata: {
+            userId: data.userId,
+            clerk_user_id: data.userId,
+          },
+          subscription_data: {
+            metadata: {
+              userId: data.userId,
+              clerk_user_id: data.userId,
             },
-          ],
+          },
           success_url: `${returnUrl}/pricing?status=success&session_id={CHECKOUT_SESSION_ID}&userId=${encodeURIComponent(data.userId)}`,
           cancel_url: `${returnUrl}/pricing?status=cancelled`,
         });
 
         return { ok: true as const, checkoutUrl: session.url, mode: "stripe" as const };
-      } catch (err) {
+      } catch (err: any) {
         console.error("[Stripe] Failed to create checkout session:", err);
       }
     }
@@ -111,6 +137,32 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
       mode: "test_demo" as const,
       message: "Stripe test mode simulated. You can instantly activate Pro for demo evaluation.",
     };
+  });
+
+export const verifyCheckoutSession = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => VerifySessionInput.parse(d))
+  .handler(async ({ data }) => {
+    const stripeKey = process.env.STRIPE_SECRET_KEY;
+    if (!stripeKey || !stripeKey.startsWith("sk_")) {
+      return { verified: false as const, error: "Stripe not configured on server" };
+    }
+
+    try {
+      const stripe = new Stripe(stripeKey, { apiVersion: "2025-02-24.acacia" as any });
+      const session = await stripe.checkout.sessions.retrieve(data.sessionId);
+
+      if (session.payment_status === "paid" || session.status === "complete") {
+        const customerId =
+          typeof session.customer === "string" ? session.customer : session.customer?.id;
+        const profile = await setUserPlan(data.userId, "pro", customerId);
+        return { verified: true as const, profile };
+      }
+
+      return { verified: false as const, status: session.status };
+    } catch (err: any) {
+      console.error("[Stripe] Failed to verify checkout session:", err);
+      return { verified: false as const, error: err.message };
+    }
   });
 
 export const grantProAccess = createServerFn({ method: "POST" })

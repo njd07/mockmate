@@ -9,6 +9,7 @@ import { GlowButton } from "@/components/GlowButton";
 import { ScoreRing } from "@/components/ScoreRing";
 import { DOMAIN_META, type Domain } from "@/lib/knowledge";
 import { evaluateInterview, type Evaluation } from "@/lib/evaluate.functions";
+import { completeSession } from "@/lib/user.functions";
 
 const SearchSchema = z.object({ domain: z.enum(["dsa", "springboot", "system_design", "lld"]) });
 
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/evaluation")({
 });
 
 function EvalPage() {
-  const { user, loading, settings } = useSession();
+  const { user, loading, settings, refreshProfile } = useSession();
   const { domain } = Route.useSearch();
   const router = useRouter();
   const evalFn = useServerFn(evaluateInterview);
@@ -41,7 +42,32 @@ function EvalPage() {
         ollamaModel: settings.ollamaModel,
       } });
       if (!r.ok) setError(r.error);
-      else setEval(r.evaluation);
+      else {
+        setEval(r.evaluation);
+        if (user?.id && r.evaluation) {
+          completeSession({
+            data: {
+              userId: user.id,
+              domain,
+              sessionType: "interview",
+              score: {
+                overall: r.evaluation.overallScore,
+                overallScore: r.evaluation.overallScore,
+                technicalDepth: r.evaluation.technicalDepth,
+                communication: r.evaluation.communication,
+                problemSolving: r.evaluation.problemSolving,
+              },
+              feedback: {
+                summary: r.evaluation.summary,
+                strengths: r.evaluation.strengths,
+                weaknesses: r.evaluation.weaknesses,
+                recommendations: r.evaluation.recommendations,
+              },
+            },
+          }).catch(console.error);
+          refreshProfile().catch(console.error);
+        }
+      }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, user]);

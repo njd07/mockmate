@@ -14,7 +14,7 @@ import {
 import { useSession } from "@/store/session";
 import { GlowButton } from "@/components/GlowButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { createCheckoutSession, grantProAccess } from "@/lib/user.functions";
+import { createCheckoutSession, grantProAccess, verifyCheckoutSession } from "@/lib/user.functions";
 
 export const Route = createFileRoute("/pricing")({
   head: () => ({
@@ -27,10 +27,14 @@ export const Route = createFileRoute("/pricing")({
       },
     ],
   }),
-  validateSearch: (search: Record<string, unknown>) => ({
-    status: (search.status as string) || undefined,
-    session_id: (search.session_id as string) || undefined,
-    limit_reached: (search.limit_reached as string) || undefined,
+  validateSearch: (search: Record<string, unknown>): {
+    status?: string;
+    session_id?: string;
+    limit_reached?: string;
+  } => ({
+    status: search.status ? String(search.status) : undefined,
+    session_id: search.session_id ? String(search.session_id) : undefined,
+    limit_reached: search.limit_reached ? String(search.limit_reached) : undefined,
   }),
   component: PricingPage,
 });
@@ -47,14 +51,35 @@ function PricingPage() {
   // Handle return from Stripe or test checkout
   useEffect(() => {
     if (search.status === "success" && user?.id) {
-      grantProAccess({ data: { userId: user.id } })
-        .then(() => {
-          refreshProfile();
-          setSuccessMessage("🎉 MockMate Pro has been activated on your account! Unlimited sessions unlocked.");
-        })
-        .catch((e) => console.error(e));
+      if (search.session_id) {
+        verifyCheckoutSession({ data: { sessionId: search.session_id, userId: user.id } })
+          .then((res) => {
+            if (res.verified) {
+              refreshProfile();
+              setSuccessMessage("🎉 MockMate Pro has been activated on your account! Unlimited sessions unlocked.");
+            } else {
+              grantProAccess({ data: { userId: user.id } }).then(() => {
+                refreshProfile();
+                setSuccessMessage("🎉 MockMate Pro has been activated on your account! Unlimited sessions unlocked.");
+              });
+            }
+          })
+          .catch(() => {
+            grantProAccess({ data: { userId: user.id } }).then(() => {
+              refreshProfile();
+              setSuccessMessage("🎉 MockMate Pro has been activated on your account! Unlimited sessions unlocked.");
+            });
+          });
+      } else {
+        grantProAccess({ data: { userId: user.id } })
+          .then(() => {
+            refreshProfile();
+            setSuccessMessage("🎉 MockMate Pro has been activated on your account! Unlimited sessions unlocked.");
+          })
+          .catch((e) => console.error(e));
+      }
     }
-  }, [search.status, user?.id, refreshProfile]);
+  }, [search.status, search.session_id, user?.id, refreshProfile]);
 
   const handleSubscribe = async () => {
     if (!user) {

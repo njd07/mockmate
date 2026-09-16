@@ -6,8 +6,11 @@
 // You can pass additional config via defineConfig({ vite: { ... }, etc... }) if needed.
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
+// Detect if building for Vercel or standard Node server
+const preset = process.env.VERCEL ? "vercel" : (process.env.NITRO_PRESET || "node-server");
+
 export default defineConfig({
-  nitro: { preset: "node-server" },
+  nitro: { preset },
   tanstackStart: {
     server: { entry: "server" },
   },

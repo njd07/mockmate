@@ -72,7 +72,7 @@
   --violet: oklch(0.54 0.22 290);
   --success: oklch(0.62 0.18 150);
 
-  --grid-line: rgba(15, 23, 42, 0.045);
+  --grid-line: rgba(15, 23, 42, 0.08);
 }
 
 /* Dark Theme */
@@ -108,7 +108,7 @@
   --violet: oklch(0.66 0.2 290);
   --success: oklch(0.7 0.16 150);
 
-  --grid-line: rgba(255, 255, 255, 0.04);
+  --grid-line: rgba(255, 255, 255, 0.07);
 }
 
 html, body {
@@ -150,14 +150,14 @@ body {
   box-shadow: 0 8px 24px -4px rgb(0 0 0 / 0.5);
 }
 
-/* Subtle, barely-noticeable grid pattern with thin lines and large spacing */
+/* Subtle, barely-noticeable grid pattern — thin lines, wide spacing, full-page coverage */
 .grid-bg {
   background-image:
     linear-gradient(var(--grid-line) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: radial-gradient(ellipse 90% 70% at 50% 10%, black 40%, transparent 95%);
-  -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 10%, black 40%, transparent 95%);
+  background-size: 72px 72px;
+  mask-image: radial-gradient(ellipse 140% 120% at 50% 40%, black 60%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 140% 120% at 50% 40%, black 60%, transparent 100%);
 }
 
 .glow-cyan { border-left: 3px solid var(--cyan); }
