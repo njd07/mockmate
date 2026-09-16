@@ -34,7 +34,7 @@ MockMate bridges the gap between solitary coding practice and real-world high-st
    - **Low-Level Design (LLD):** SOLID principles, design patterns (Factory, Strategy, Observer, Decorator), and schema design.
 3. **Multi-Metric Evaluation Engine:** Generates instant diagnostic scorecards covering Technical Depth, Communication, Problem Solving, strengths, weaknesses, and actionable improvement recommendations.
 4. **Placement Readiness Score:** A proprietary diagnostic algorithm aggregating cross-session performance and domain coverage into a single readiness percentage (0–100%).
-5. **Freemium Business Model:** 3 free starter sessions, with seamless upgrade to **MockMate Pro (₹499/month)** integrated with Stripe Checkout in test mode.
+5. **Freemium Business Model:** 3 free starter sessions, with seamless upgrade to **MockMate Pro (₹199/month · 70% OFF student discount)** integrated with Stripe Checkout in test mode.
 
 ---
 
@@ -92,7 +92,7 @@ MockMate operates on a high-margin freemium SaaS model:
   - Basic technical depth evaluation.
   - Cost per free user: ~₹0.15 (Groq free tier + Edge TTS serverless compute).
 
-- **MockMate Pro (₹499 / month or ₹2,999 / year):**
+- **MockMate Pro (₹199 / month or ₹1,499 / year — 70% Discount from ₹699):**
   - Unlimited voice mock interviews & quizzes across all 4 domains.
   - Priority Groq Llama 3.3 70B inference.
   - Granular communication & pacing breakdown.

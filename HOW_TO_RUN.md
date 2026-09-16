@@ -109,7 +109,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
    - Copy **Secret key** (`sk_test_...`) → paste as `STRIPE_SECRET_KEY`
 4. Go to **Product catalog** → **Add product**:
    - Name: `MockMate Pro`
-   - Price: `₹499` (or `$6.99`) per month (Recurring)
+   - Price: `₹199` per month (Recurring) — *70% discount from ₹699*
    - Save the product and copy the **Price ID** (`price_...`) → paste as `STRIPE_PRICE_ID`
 5. *(Optional)* **Webhooks**:
    - In Stripe Dashboard → **Developers** → **Webhooks** → **Add endpoint**:

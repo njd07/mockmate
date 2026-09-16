@@ -265,9 +265,17 @@ function PricingPage() {
                   <Zap className="w-4 h-4 text-primary fill-primary" />
                 </div>
               </div>
-              <div className="flex items-baseline gap-1 mb-4">
-                <span className="text-4xl font-extrabold text-foreground">₹499</span>
-                <span className="text-sm text-muted-foreground">/ month</span>
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-base line-through text-muted-foreground font-medium">₹699</span>
+                  <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 animate-pulse">
+                    70% OFF
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-4xl font-extrabold text-foreground">₹199</span>
+                  <span className="text-sm text-muted-foreground font-medium">/ month</span>
+                </div>
               </div>
               <p className="text-xs text-muted-foreground mb-6">
                 Complete placement immersion. Unlimited full mocks until you secure your dream offer.
@@ -313,7 +321,7 @@ function PricingPage() {
                   disabled={loading}
                 >
                   <CreditCard className="w-4 h-4 mr-1.5" />
-                  {loading ? "Processing..." : "Subscribe to Pro (₹499/mo)"}
+                  {loading ? "Processing..." : "Subscribe to Pro (₹199/mo)"}
                 </GlowButton>
               )}
               <p className="text-[11px] text-center text-muted-foreground mt-2">
@@ -338,7 +346,7 @@ function PricingPage() {
 
               <div className="p-3 rounded-lg bg-secondary/80 border border-border mb-4 text-xs space-y-1.5 font-mono">
                 <div>
-                  <span className="text-muted-foreground">Product:</span> MockMate Pro (₹499/mo)
+                  <span className="text-muted-foreground">Product:</span> MockMate Pro (₹199/mo · 70% OFF)
                 </div>
                 <div>
                   <span className="text-muted-foreground">Test Card:</span> 4242 •••• •••• 4242

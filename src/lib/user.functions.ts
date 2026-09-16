@@ -93,11 +93,11 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
                 price_data: {
                   currency: "inr",
                   product_data: {
-                    name: "MockMate Pro",
+                    name: "MockMate Pro (70% OFF Special)",
                     description:
-                      "Unlimited AI mock interviews, deep speech analytics, and custom feedback",
+                      "Unlimited AI mock interviews, deep speech analytics, and custom feedback (70% student discount applied)",
                   },
-                  unit_amount: 49900, // ₹499
+                  unit_amount: 19900, // ₹199 (70% OFF from ₹699)
                   recurring: { interval: "month" as const },
                 },
                 quantity: 1,

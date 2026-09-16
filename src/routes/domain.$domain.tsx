@@ -83,7 +83,7 @@ function DomainPage() {
             </div>
             <Link to="/pricing">
               <GlowButton size="sm" variant="primary" className="shrink-0">
-                Unlock Pro (₹499)
+                Unlock Pro (₹199 · 70% OFF)
               </GlowButton>
             </Link>
           </div>

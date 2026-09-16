@@ -28,7 +28,7 @@ Two modes per domain:
 | **Database** | **Supabase Postgres** (`src/lib/supabase-db.ts`) | Persistent tables (`user_profiles`, `session_history`) with local memory fallback. |
 | **Text-to-Speech** | **Microsoft Edge TTS** (`msedge-tts`) | Free neural audio (`en-US-AriaNeural`), zero API keys or credit limits needed. |
 | **LLM Router** | **Groq → Ollama → Gemini** (30s deadline) | High-speed primary inference via Groq Llama 3.3 (~500 tok/sec), local offline Ollama fallback, and Gemini 2.0 Flash cloud backup. |
-| **Freemium & Billing** | **Stripe Checkout** (`src/routes/pricing.tsx`) | 3 free sessions limit, followed by test-mode card checkout (`4242 4242 4242 4242`) to activate MockMate Pro (₹499/mo). |
+| **Freemium & Billing** | **Stripe Checkout** (`src/routes/pricing.tsx`) | 3 free sessions limit, followed by test-mode card checkout (`4242 4242 4242 4242`) to activate MockMate Pro (₹199/mo · 70% OFF). |
 | **Styling** | Tailwind CSS v4 + Vanilla CSS tokens in `src/styles.css` | Dual Light & Dark themes, subtle minimal 64px SaaS grid, and mobile-first responsive layout. |
 
 ---
