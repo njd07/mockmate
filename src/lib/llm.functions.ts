@@ -28,54 +28,63 @@ async function tryGroq(
   temperature: number,
   jsonMode?: boolean,
 ): Promise<{ ok: true; text: string; modelUsed: string } | null> {
-  try {
-    const controller = new AbortController();
-    const t = setTimeout(() => controller.abort(), 10_000);
+  const candidateModels = [
+    "qwen/qwen3.8-27b",
+    "openai/gpt-oss-120b",
+    "llama-3.3-70b-versatile",
+    "groq/compound",
+  ];
 
-    const body: Record<string, unknown> = {
-      model: "llama-3.3-70b-versatile",
-      messages,
-      temperature,
-      max_tokens: 1024,
-    };
-    if (jsonMode) body.response_format = { type: "json_object" };
+  for (const model of candidateModels) {
+    try {
+      const controller = new AbortController();
+      const t = setTimeout(() => controller.abort(), 10_000);
 
-    console.log(`[LLM:Groq] Calling llama-3.3-70b-versatile...`);
-    const start = Date.now();
+      const body: Record<string, unknown> = {
+        model,
+        messages,
+        temperature,
+        max_tokens: 1024,
+      };
+      if (jsonMode) body.response_format = { type: "json_object" };
 
-    const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    });
-    clearTimeout(t);
-    console.log(`[LLM:Groq] response ${res.status} in ${Date.now() - start}ms`);
+      console.log(`[LLM:Groq] Calling ${model}...`);
+      const start = Date.now();
 
-    if (res.status === 429 || res.status >= 500) {
-      console.warn(`[LLM:Groq] Rate limited or server error: ${res.status}`);
-      return null;
+      const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      });
+      clearTimeout(t);
+      console.log(`[LLM:Groq] response ${res.status} in ${Date.now() - start}ms`);
+
+      if (res.status === 429 || res.status >= 500) {
+        console.warn(`[LLM:Groq] Rate limited or server error: ${res.status}`);
+        return null; // Don't keep hammering if rate limited
+      }
+      if (!res.ok) {
+        const errBody = await res.text();
+        console.warn(`[LLM:Groq] Model ${model} failed (${res.status}): ${errBody.slice(0, 150)}`);
+        continue; // Try next candidate model
+      }
+
+      const json = await res.json();
+      const text = json?.choices?.[0]?.message?.content;
+      if (typeof text !== "string" || !text.trim()) {
+        continue;
+      }
+      return { ok: true, text, modelUsed: `groq/${model}` };
+    } catch (e) {
+      console.error(`[LLM:Groq] ${(e as Error).message}`);
     }
-    if (!res.ok) {
-      const errBody = await res.text();
-      console.error(`[LLM:Groq] HTTP ${res.status}: ${errBody.slice(0, 200)}`);
-      return null;
-    }
-
-    const json = await res.json();
-    const text = json?.choices?.[0]?.message?.content;
-    if (typeof text !== "string" || !text.trim()) {
-      console.error("[LLM:Groq] empty response");
-      return null;
-    }
-    return { ok: true, text, modelUsed: "groq/llama-3.3-70b-versatile" };
-  } catch (e) {
-    console.error(`[LLM:Groq] ${(e as Error).message}`);
-    return null;
   }
+
+  return null;
 }
 
 // ─── Provider: Ollama (local) ──────────────────────────────────────
@@ -169,39 +178,52 @@ async function tryGemini(
       body.systemInstruction = { parts: [{ text: systemParts }] };
     }
 
-    const model = "gemini-2.0-flash";
-    console.log(`[LLM:Gemini] Calling ${model}...`);
-    const start = Date.now();
+    const candidateModels = [
+      "gemini-3.6-flash",
+      "gemini-2.5-flash",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash",
+    ];
 
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-        signal: controller.signal,
+    for (const model of candidateModels) {
+      try {
+        console.log(`[LLM:Gemini] Calling ${model}...`);
+        const start = Date.now();
+
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          }
+        );
+        console.log(`[LLM:Gemini] response ${res.status} in ${Date.now() - start}ms`);
+
+        if (res.status === 429 || res.status >= 500) {
+          console.warn(`[LLM:Gemini] Rate limited or server error: ${res.status}`);
+          return null;
+        }
+        if (!res.ok) {
+          const errBody = await res.text();
+          console.warn(`[LLM:Gemini] Model ${model} failed (${res.status}): ${errBody.slice(0, 150)}`);
+          continue;
+        }
+
+        const json = await res.json();
+        const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (typeof text !== "string" || !text.trim()) {
+          continue;
+        }
+        clearTimeout(t);
+        return { ok: true, text, modelUsed: `gemini/${model}` };
+      } catch (err) {
+        console.error(`[LLM:Gemini] Model ${model} error:`, (err as Error).message);
       }
-    );
+    }
     clearTimeout(t);
-    console.log(`[LLM:Gemini] response ${res.status} in ${Date.now() - start}ms`);
-
-    if (res.status === 429 || res.status >= 500) {
-      console.warn(`[LLM:Gemini] Rate limited or server error: ${res.status}`);
-      return null;
-    }
-    if (!res.ok) {
-      const errBody = await res.text();
-      console.error(`[LLM:Gemini] HTTP ${res.status}: ${errBody.slice(0, 200)}`);
-      return null;
-    }
-
-    const json = await res.json();
-    const text = json?.candidates?.[0]?.content?.parts?.[0]?.text;
-    if (typeof text !== "string" || !text.trim()) {
-      console.error("[LLM:Gemini] empty response");
-      return null;
-    }
-    return { ok: true, text, modelUsed: `gemini/${model}` };
+    return null;
   } catch (e) {
     console.error(`[LLM:Gemini] ${(e as Error).message}`);
     return null;
