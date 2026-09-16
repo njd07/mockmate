@@ -36,18 +36,21 @@ let clientInitialized = false;
 export function getSupabaseAdminClient(): SupabaseClient | null {
   if (clientInitialized) return cachedClient;
 
-  const url = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+  let rawUrl = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
   const key =
     process.env.SUPABASE_SERVICE_ROLE_KEY ||
     process.env.SUPABASE_ANON_KEY ||
     process.env.VITE_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!url || !key) {
+  if (!rawUrl || !key) {
     console.info("[DB:Memory] Supabase credentials not found in env — using in-memory fallback store.");
     clientInitialized = true;
     cachedClient = null;
     return null;
   }
+
+  // Normalize project URL: strip /rest/v1/ or trailing slashes if user copied REST endpoint
+  const url = rawUrl.trim().replace(/\/rest\/v1\/?$/, "").replace(/\/+$/, "");
 
   try {
     cachedClient = createClient(url, key, {
