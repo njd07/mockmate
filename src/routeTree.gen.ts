@@ -9,34 +9,19 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ProgressRouteImport } from './routes/progress'
-import { Route as PricingRouteImport } from './routes/pricing'
-import { Route as LoginRouteImport } from './routes/login'
-import { Route as EvaluationRouteImport } from './routes/evaluation'
-import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as QuizDomainRouteImport } from './routes/quiz.$domain'
-import { Route as InterviewDomainRouteImport } from './routes/interview.$domain'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as EvaluationRouteImport } from './routes/evaluation'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as PricingRouteImport } from './routes/pricing'
+import { Route as ProgressRouteImport } from './routes/progress'
 import { Route as DomainDomainRouteImport } from './routes/domain.$domain'
+import { Route as InterviewDomainRouteImport } from './routes/interview.$domain'
+import { Route as QuizDomainRouteImport } from './routes/quiz.$domain'
 
-const ProgressRoute = ProgressRouteImport.update({
-  id: '/progress',
-  path: '/progress',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PricingRoute = PricingRouteImport.update({
-  id: '/pricing',
-  path: '/pricing',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LoginRoute = LoginRouteImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const EvaluationRoute = EvaluationRouteImport.update({
-  id: '/evaluation',
-  path: '/evaluation',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -44,14 +29,29 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const EvaluationRoute = EvaluationRouteImport.update({
+  id: '/evaluation',
+  path: '/evaluation',
   getParentRoute: () => rootRouteImport,
 } as any)
-const QuizDomainRoute = QuizDomainRouteImport.update({
-  id: '/quiz/$domain',
-  path: '/quiz/$domain',
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProgressRoute = ProgressRouteImport.update({
+  id: '/progress',
+  path: '/progress',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DomainDomainRoute = DomainDomainRouteImport.update({
+  id: '/domain/$domain',
+  path: '/domain/$domain',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InterviewDomainRoute = InterviewDomainRouteImport.update({
@@ -59,9 +59,9 @@ const InterviewDomainRoute = InterviewDomainRouteImport.update({
   path: '/interview/$domain',
   getParentRoute: () => rootRouteImport,
 } as any)
-const DomainDomainRoute = DomainDomainRouteImport.update({
-  id: '/domain/$domain',
-  path: '/domain/$domain',
+const QuizDomainRoute = QuizDomainRouteImport.update({
+  id: '/quiz/$domain',
+  path: '/quiz/$domain',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -149,32 +149,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/progress': {
-      id: '/progress'
-      path: '/progress'
-      fullPath: '/progress'
-      preLoaderRoute: typeof ProgressRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pricing': {
-      id: '/pricing'
-      path: '/pricing'
-      fullPath: '/pricing'
-      preLoaderRoute: typeof PricingRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/evaluation': {
-      id: '/evaluation'
-      path: '/evaluation'
-      fullPath: '/evaluation'
-      preLoaderRoute: typeof EvaluationRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -184,18 +163,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/evaluation': {
+      id: '/evaluation'
+      path: '/evaluation'
+      fullPath: '/evaluation'
+      preLoaderRoute: typeof EvaluationRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/quiz/$domain': {
-      id: '/quiz/$domain'
-      path: '/quiz/$domain'
-      fullPath: '/quiz/$domain'
-      preLoaderRoute: typeof QuizDomainRouteImport
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/progress': {
+      id: '/progress'
+      path: '/progress'
+      fullPath: '/progress'
+      preLoaderRoute: typeof ProgressRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/domain/$domain': {
+      id: '/domain/$domain'
+      path: '/domain/$domain'
+      fullPath: '/domain/$domain'
+      preLoaderRoute: typeof DomainDomainRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/interview/$domain': {
@@ -205,11 +205,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InterviewDomainRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/domain/$domain': {
-      id: '/domain/$domain'
-      path: '/domain/$domain'
-      fullPath: '/domain/$domain'
-      preLoaderRoute: typeof DomainDomainRouteImport
+    '/quiz/$domain': {
+      id: '/quiz/$domain'
+      path: '/quiz/$domain'
+      fullPath: '/quiz/$domain'
+      preLoaderRoute: typeof QuizDomainRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
