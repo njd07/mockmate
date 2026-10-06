@@ -211,7 +211,7 @@ function LandingPage() {
         <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground pt-4 border-t border-border/60">
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>3 Free Full Mock Interviews Included</span>
+            <span>5 Free Mock Interviews / Month (Auto-Resets)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />

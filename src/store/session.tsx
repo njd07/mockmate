@@ -74,8 +74,8 @@ export function SessionProvider({
   const [loading, setLoading] = useState(true);
   const [isPro, setIsPro] = useState(false);
   const [freeSessionsUsed, setFreeSessionsUsed] = useState(0);
-  const [remainingFree, setRemainingFree] = useState(3);
-  const [credits, setCredits] = useState(3);
+  const [remainingFree, setRemainingFree] = useState(5);
+  const [credits, setCredits] = useState(5);
 
   const [settings, setSettingsState] = useState<Settings>(() => {
     if (typeof window === "undefined") return DEFAULTS;
@@ -103,7 +103,7 @@ export function SessionProvider({
       setIsPro(res.isPro);
       setFreeSessionsUsed(res.profile.free_sessions_used || 0);
       setRemainingFree(res.remainingFree);
-      setCredits(res.profile.credits ?? 3);
+      setCredits(res.profile.credits ?? 5);
     } catch (e) {
       console.warn("[Session] Could not fetch profile:", e);
     } finally {
@@ -145,7 +145,7 @@ export function SessionProvider({
     setCustomUser(null);
     setIsPro(false);
     setFreeSessionsUsed(0);
-    setRemainingFree(3);
+    setRemainingFree(5);
   };
 
   return (

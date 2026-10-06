@@ -23,7 +23,7 @@ export const Route = createFileRoute("/pricing")({
       {
         name: "description",
         content:
-          "Affordable mock interview preparation for CS students. Start with 3 free sessions or upgrade to MockMate Pro for unlimited AI interviews.",
+          "Affordable mock interview preparation for CS students. Start with 5 free sessions/month (auto-resets) or upgrade to MockMate Pro for unlimited AI interviews.",
       },
     ],
   }),
@@ -156,10 +156,9 @@ function PricingPage() {
           <div className="mb-8 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-start gap-3 text-amber-900 dark:text-amber-200">
             <AlertCircle className="w-5 h-5 shrink-0 mt-0.5 text-amber-500" />
             <div>
-              <p className="font-semibold text-sm">Free Session Limit Reached</p>
+              <p className="font-semibold text-sm">Monthly Free Session Limit Reached</p>
               <p className="text-xs opacity-90 mt-0.5">
-                You've completed your 3 complimentary mock sessions! Upgrade to MockMate Pro to unlock unlimited voice
-                and quiz practices across all domains.
+                You've completed your 5 complimentary mock interviews for this month (resets next month)! Upgrade to MockMate Pro to unlock unlimited voice interviews across all domains.
               </p>
             </div>
           </div>
@@ -207,17 +206,18 @@ function PricingPage() {
               </div>
               <div className="flex items-baseline gap-1 mb-4">
                 <span className="text-4xl font-extrabold text-foreground">₹0</span>
-                <span className="text-sm text-muted-foreground">/ forever</span>
+                <span className="text-sm text-muted-foreground">/ month</span>
               </div>
               <p className="text-xs text-muted-foreground mb-6">
-                Perfect for trying out the interview flow and assessing baseline preparation.
+                Perfect for baseline preparation. Automatically resets to 5 fresh interviews each month.
               </p>
 
               <div className="space-y-3 mb-8">
                 <div className="flex items-center gap-2.5 text-xs text-foreground">
                   <Check className="w-4 h-4 text-emerald-500 shrink-0" />
                   <span>
-                    <strong>3 Free Full Mock Interviews</strong>
+                    <strong>5 Free Mock Interviews / Month</strong>
+                    <span className="text-[11px] text-muted-foreground block">Auto-resets every month</span>
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5 text-xs text-foreground">
@@ -246,7 +246,7 @@ function PricingPage() {
                 <div className="text-xs text-center text-muted-foreground py-2 font-medium">
                   {isPro
                     ? "Upgraded to Pro"
-                    : `${freeSessionsUsed}/3 free sessions used (${remainingFree} remaining)`}
+                    : `${freeSessionsUsed}/5 free sessions used this month (${remainingFree} remaining)`}
                 </div>
               ) : (
                 <Link to="/login" className="w-full block">

@@ -74,7 +74,7 @@ function Dashboard() {
             ) : (
               <Link to="/pricing">
                 <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground border border-border hover:border-primary/40 transition-colors">
-                  <span className="font-semibold text-primary">{remainingFree}/3</span> free interviews left
+                  <span className="font-semibold text-primary">{remainingFree}/5</span> free interviews left this month
                 </span>
               </Link>
             )}
@@ -117,7 +117,7 @@ function Dashboard() {
             <div className="flex items-center gap-3 p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-900 dark:text-amber-200">
               <ShieldAlert className="w-4 h-4 text-amber-500 shrink-0" />
               <span>
-                {remainingFree === 0 ? "You've used all 3 free sessions." : "Only 1 free session remaining."}
+                {remainingFree === 0 ? "You've used all 5 free sessions this month (resets next month)." : "Only 1 free session remaining this month."}
               </span>
               <Link to="/pricing">
                 <span className="font-bold underline cursor-pointer text-primary">Upgrade</span>

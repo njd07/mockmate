@@ -75,9 +75,9 @@ function DomainPage() {
             <div className="flex items-start gap-3">
               <ShieldAlert className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
               <div>
-                <h4 className="text-sm font-bold">Free Interview Limit Reached ({freeSessionsUsed}/3 used)</h4>
+                <h4 className="text-sm font-bold">Monthly Free Limit Reached ({freeSessionsUsed}/5 used)</h4>
                 <p className="text-xs opacity-90 mt-0.5">
-                  You have completed your 3 free voice mock interviews. You can still practice unlimited <strong>Concept &amp; MCQ Quizzes</strong> below, or upgrade to Pro for unlimited AI voice interviews.
+                  You have completed your 5 free voice mock interviews for this month (resets next month). You can still practice unlimited <strong>Concept &amp; MCQ Quizzes</strong> below, or upgrade to Pro for unlimited AI voice interviews.
                 </p>
               </div>
             </div>
@@ -101,7 +101,7 @@ function DomainPage() {
                   <Mic className="h-6 w-6" />
                 </div>
                 <span className="text-[11px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-full border border-primary/20 bg-primary/10 text-primary font-semibold">
-                  {isPro ? "Pro Unlimited" : `${remainingFree} of 3 Free Left`}
+                  {isPro ? "Pro Unlimited" : `${remainingFree} of 5 Free Left`}
                 </span>
               </div>
               <h3 className="text-xl font-bold text-foreground mb-1.5 group-hover:text-primary transition-colors">

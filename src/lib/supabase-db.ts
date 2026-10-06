@@ -7,6 +7,7 @@ export interface UserProfile {
   plan: "free" | "pro";
   free_sessions_used: number;
   credits: number;
+  last_reset_date?: string;
   stripe_customer_id?: string;
   created_at?: string;
   updated_at?: string;
@@ -28,6 +29,81 @@ const memoryStore = {
   profiles: new Map<string, UserProfile>(),
   sessions: [] as SessionRecord[],
 };
+
+/**
+ * Checks whether the user's monthly free session quota should be reset.
+ * Resets if last_reset_date is from a prior calendar month or missing.
+ */
+export function shouldResetMonthly(lastResetDateStr?: string): boolean {
+  if (!lastResetDateStr) return true;
+  const lastReset = new Date(lastResetDateStr);
+  if (isNaN(lastReset.getTime())) return true;
+  const now = new Date();
+  const resetYearMonth = lastReset.getUTCFullYear() * 12 + lastReset.getUTCMonth();
+  const currentYearMonth = now.getUTCFullYear() * 12 + now.getUTCMonth();
+  return currentYearMonth > resetYearMonth;
+}
+
+async function checkAndApplyMonthlyReset(
+  client: SupabaseClient | null,
+  profile: UserProfile
+): Promise<UserProfile> {
+  if (!shouldResetMonthly(profile.last_reset_date)) {
+    return profile;
+  }
+
+  const nowIso = new Date().toISOString();
+  if (client) {
+    try {
+      // First try updating with last_reset_date
+      const { data, error } = await client
+        .from("user_profiles")
+        .update({
+          free_sessions_used: 0,
+          credits: 5,
+          last_reset_date: nowIso,
+          updated_at: nowIso,
+        })
+        .eq("clerk_user_id", profile.clerk_user_id)
+        .select()
+        .single();
+
+      if (!error && data) {
+        return data as UserProfile;
+      }
+
+      // Fallback if column 'last_reset_date' does not exist yet in Supabase table
+      if (error) {
+        console.warn("[DB:Supabase] Reset update with last_reset_date failed, trying fallback:", error.message);
+        const { data: fallbackData } = await client
+          .from("user_profiles")
+          .update({
+            free_sessions_used: 0,
+            credits: 5,
+            updated_at: nowIso,
+          })
+          .eq("clerk_user_id", profile.clerk_user_id)
+          .select()
+          .single();
+        if (fallbackData) {
+          const res = fallbackData as UserProfile;
+          res.last_reset_date = nowIso;
+          return res;
+        }
+      }
+    } catch (e) {
+      console.warn("[DB:Supabase] checkAndApplyMonthlyReset error:", e);
+    }
+  }
+
+  // Fallback update on in-memory object
+  profile.free_sessions_used = 0;
+  profile.credits = 5;
+  profile.last_reset_date = nowIso;
+  profile.updated_at = nowIso;
+  memoryStore.profiles.set(profile.clerk_user_id, profile);
+  return profile;
+}
 
 // Singleton Supabase admin client cache
 let cachedClient: SupabaseClient | null = null;
@@ -86,7 +162,7 @@ export async function getOrCreateUserProfile(
       }
 
       if (data) {
-        return data as UserProfile;
+        return await checkAndApplyMonthlyReset(client, data as UserProfile);
       }
 
       // Create new profile
@@ -96,16 +172,28 @@ export async function getOrCreateUserProfile(
         name,
         plan: "free",
         free_sessions_used: 0,
-        credits: 3,
+        credits: 5,
+        last_reset_date: new Date().toISOString(),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       };
 
-      const { data: inserted, error: insertError } = await client
+      let { data: inserted, error: insertError } = await client
         .from("user_profiles")
         .insert(newProfile)
         .select()
         .single();
+
+      if (insertError && insertError.message?.includes("last_reset_date")) {
+        const { last_reset_date, ...withoutReset } = newProfile;
+        const res = await client
+          .from("user_profiles")
+          .insert(withoutReset)
+          .select()
+          .single();
+        inserted = res.data;
+        insertError = res.error;
+      }
 
       if (!insertError && inserted) {
         return inserted as UserProfile;
@@ -124,10 +212,17 @@ export async function getOrCreateUserProfile(
       name,
       plan: "free",
       free_sessions_used: 0,
-      credits: 3,
+      credits: 5,
+      last_reset_date: new Date().toISOString(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
+    memoryStore.profiles.set(userId, profile);
+  } else if (shouldResetMonthly(profile.last_reset_date)) {
+    profile.free_sessions_used = 0;
+    profile.credits = 5;
+    profile.last_reset_date = new Date().toISOString();
+    profile.updated_at = new Date().toISOString();
     memoryStore.profiles.set(userId, profile);
   }
   return profile;
@@ -158,17 +253,18 @@ export async function recordCompletedSession(
       await client.from("session_history").insert(sessionEntry);
 
       // 2. Fetch current profile
-      const { data: profile } = await client
+      const { data: rawProfile } = await client
         .from("user_profiles")
         .select("*")
         .eq("clerk_user_id", userId)
         .single();
 
-      if (profile) {
+      if (rawProfile) {
+        const profile = await checkAndApplyMonthlyReset(client, rawProfile as UserProfile);
         // Only count against free sessions / credits for real mock interviews, NOT for MCQ quizzes
         const isInterview = sessionType === "interview";
         const nextUsed = isInterview ? (profile.free_sessions_used || 0) + 1 : (profile.free_sessions_used || 0);
-        const nextCredits = isInterview ? Math.max(0, (profile.credits || 3) - 1) : (profile.credits ?? 3);
+        const nextCredits = isInterview ? Math.max(0, (profile.credits || 5) - 1) : (profile.credits ?? 5);
 
         const { data: updated } = await client
           .from("user_profiles")

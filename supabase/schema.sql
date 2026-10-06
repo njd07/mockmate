@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS public.user_profiles (
   name TEXT,
   plan TEXT DEFAULT 'free' CHECK (plan IN ('free', 'pro')),
   free_sessions_used INTEGER DEFAULT 0,
-  credits INTEGER DEFAULT 3,
+  credits INTEGER DEFAULT 5,
+  last_reset_date TIMESTAMPTZ DEFAULT NOW(),
   stripe_customer_id TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -30,6 +31,9 @@ CREATE TABLE IF NOT EXISTS public.session_history (
 -- Add columns if table already exists from previous runs
 DO $$ 
 BEGIN
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'last_reset_date') THEN
+    ALTER TABLE public.user_profiles ADD COLUMN last_reset_date TIMESTAMPTZ DEFAULT NOW();
+  END IF;
   IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'session_history' AND column_name = 'feedback') THEN
     ALTER TABLE public.session_history ADD COLUMN feedback JSONB;
   END IF;
@@ -79,3 +83,26 @@ CREATE TRIGGER set_user_profiles_updated_at
   BEFORE UPDATE ON public.user_profiles
   FOR EACH ROW
   EXECUTE FUNCTION public.handle_updated_at();
+
+-- =========================================================================
+-- USEFUL ADMIN SQL QUERIES (Run in Supabase SQL Editor as needed)
+-- =========================================================================
+
+-- 1. Upgrade a specific user to 'pro' plan by email:
+-- UPDATE public.user_profiles SET plan = 'pro' WHERE email = 'user@example.com';
+
+-- 2. Upgrade a specific user to 'pro' plan by clerk_user_id:
+-- UPDATE public.user_profiles SET plan = 'pro' WHERE clerk_user_id = 'user_2t...';
+
+-- 3. Downgrade a specific user back to 'free' plan:
+-- UPDATE public.user_profiles SET plan = 'free' WHERE email = 'user@example.com';
+
+-- 4. Reset a user's monthly free sessions manually back to 5 available:
+-- UPDATE public.user_profiles 
+-- SET free_sessions_used = 0, credits = 5, last_reset_date = NOW() 
+-- WHERE email = 'user@example.com';
+
+-- 5. View all registered users and their current plan & usage:
+-- SELECT clerk_user_id, email, name, plan, free_sessions_used, credits, last_reset_date, updated_at 
+-- FROM public.user_profiles 
+-- ORDER BY created_at DESC;

@@ -47,8 +47,8 @@ export const getUserStatus = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const profile = await getOrCreateUserProfile(data.userId, data.email, data.name);
     const isPro = profile.plan === "pro";
-    const freeLimit = 3;
-    const remainingFree = Math.max(0, freeLimit - profile.free_sessions_used);
+    const freeLimit = 5;
+    const remainingFree = Math.max(0, freeLimit - (profile.free_sessions_used || 0));
     const canStartSession = isPro || remainingFree > 0 || (profile.credits && profile.credits > 0);
 
     return {
