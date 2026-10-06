@@ -165,8 +165,11 @@ export async function recordCompletedSession(
         .single();
 
       if (profile) {
-        const nextUsed = (profile.free_sessions_used || 0) + 1;
-        const nextCredits = Math.max(0, (profile.credits || 3) - 1);
+        // Only count against free sessions / credits for real mock interviews, NOT for MCQ quizzes
+        const isInterview = sessionType === "interview";
+        const nextUsed = isInterview ? (profile.free_sessions_used || 0) + 1 : (profile.free_sessions_used || 0);
+        const nextCredits = isInterview ? Math.max(0, (profile.credits || 3) - 1) : (profile.credits ?? 3);
+
         const { data: updated } = await client
           .from("user_profiles")
           .update({
@@ -188,8 +191,10 @@ export async function recordCompletedSession(
   // Memory fallback
   memoryStore.sessions.push(sessionEntry);
   const profile = await getOrCreateUserProfile(userId);
-  profile.free_sessions_used += 1;
-  profile.credits = Math.max(0, profile.credits - 1);
+  if (sessionType === "interview") {
+    profile.free_sessions_used += 1;
+    profile.credits = Math.max(0, profile.credits - 1);
+  }
   profile.updated_at = new Date().toISOString();
   memoryStore.profiles.set(userId, profile);
   return profile;

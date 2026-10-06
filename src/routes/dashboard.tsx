@@ -74,7 +74,7 @@ function Dashboard() {
             ) : (
               <Link to="/pricing">
                 <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground border border-border hover:border-primary/40 transition-colors">
-                  <span className="font-semibold text-primary">{remainingFree}/3</span> free sessions left
+                  <span className="font-semibold text-primary">{remainingFree}/3</span> free interviews left
                 </span>
               </Link>
             )}

@@ -9,91 +9,388 @@ export type QuizQuestion = {
 
 export const QUIZ_BANK: Record<Domain, QuizQuestion[]> = {
   dsa: [
-    { question: "What is the time complexity of searching in a balanced Binary Search Tree?", options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"], correctIndex: 2, explanation: "In a balanced BST, each comparison eliminates half of the remaining tree." },
-    { question: "Which data structure is best for implementing a LRU Cache?", options: ["Array + Linked List", "Hash Map + Doubly Linked List", "Binary Tree + Queue", "Stack + Hash Map"], correctIndex: 1, explanation: "Hash Map gives O(1) access, Doubly Linked List allows O(1) removal and insertion at the ends." },
-    { question: "What algorithm is used to find the shortest path in a graph with unweighted edges?", options: ["Dijkstra's Algorithm", "Depth First Search", "Breadth First Search", "Kruskal's Algorithm"], correctIndex: 2, explanation: "BFS explores level by level, guaranteeing the shortest path in unweighted graphs." },
-    { question: "What is the worst-case time complexity of QuickSort?", options: ["O(n log n)", "O(n)", "O(n^2)", "O(log n)"], correctIndex: 2, explanation: "If the pivot is always the smallest or largest element, the partitioning is extremely unbalanced, leading to O(n^2)." },
-    { question: "Which algorithm detects a cycle in a directed graph?", options: ["Kruskal's Algorithm", "Floyd-Warshall", "Depth First Search (DFS)", "Binary Search"], correctIndex: 2, explanation: "DFS can detect a cycle by keeping track of the recursion stack (visited vs visiting)." },
-    { question: "What is the space complexity of a recursive DFS on a balanced tree?", options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"], correctIndex: 2, explanation: "The maximum depth of the recursion stack is the height of the tree, which is O(log n)." },
-    { question: "Which sorting algorithm is NOT stable by default?", options: ["Merge Sort", "Insertion Sort", "Bubble Sort", "Quick Sort"], correctIndex: 3, explanation: "Quick Sort swaps non-adjacent elements, which can change the relative order of equal elements." },
-    { question: "What is the time complexity of building a Max Heap from an array of n elements?", options: ["O(n log n)", "O(n)", "O(log n)", "O(1)"], correctIndex: 1, explanation: "Using the bottom-up approach (heapify), building a heap takes O(n) time." },
-    { question: "Which data structure uses LIFO (Last In First Out)?", options: ["Queue", "Stack", "Tree", "Graph"], correctIndex: 1, explanation: "Stacks operate on a Last In First Out principle." },
-    { question: "What is a Trie typically used for?", options: ["Shortest path algorithms", "Prefix matching and autocomplete", "Sorting numbers", "Balancing binary trees"], correctIndex: 1, explanation: "A Trie (prefix tree) efficiently stores strings and allows fast prefix lookups." },
-    { question: "In dynamic programming, what is memoization?", options: ["Solving subproblems bottom-up", "Caching results of recursive calls", "Optimizing memory usage by discarding old data", "Converting recursion to iteration"], correctIndex: 1, explanation: "Memoization is a top-down approach where results of expensive function calls are cached." },
-    { question: "What is the time complexity to insert at the front of a Singly Linked List?", options: ["O(1)", "O(n)", "O(log n)", "O(n^2)"], correctIndex: 0, explanation: "Inserting at the head only requires changing the head pointer and the new node's next pointer." },
-    { question: "Which graph traversal is used in topological sorting?", options: ["BFS", "DFS", "Both BFS and DFS can be used", "Neither"], correctIndex: 2, explanation: "Kahn's algorithm uses BFS, while the standard recursive approach uses DFS." },
-    { question: "What is the purpose of a Sentinel Node in a Linked List?", options: ["To store the maximum value", "To simplify boundary conditions", "To point to the middle element", "To compress the list"], correctIndex: 1, explanation: "Sentinel (dummy) nodes eliminate the need to check for null pointers at the head or tail." },
-    { question: "Which of the following problems can be solved using the Sliding Window technique?", options: ["Longest Palindromic Substring", "Longest Substring Without Repeating Characters", "Traveling Salesperson", "Matrix Chain Multiplication"], correctIndex: 1, explanation: "Sliding window efficiently tracks a contiguous subarray/substring that meets a condition." },
-    { question: "What is the time complexity of the Floyd-Warshall algorithm?", options: ["O(V+E)", "O(V^2)", "O(V^3)", "O(E log V)"], correctIndex: 2, explanation: "It uses three nested loops over the vertices to find all-pairs shortest paths." },
-    { question: "Which algorithmic paradigm does Dijkstra's algorithm follow?", options: ["Dynamic Programming", "Divide and Conquer", "Greedy", "Backtracking"], correctIndex: 2, explanation: "It always picks the unvisited vertex with the smallest known distance (greedy choice)." },
-    { question: "How do you find the middle of a Linked List in one pass?", options: ["Hash Map", "Two Pointers (Slow and Fast)", "Stack", "Binary Search"], correctIndex: 1, explanation: "The fast pointer moves two steps while the slow pointer moves one. When fast reaches the end, slow is at the middle." },
-    { question: "What is the time complexity of looking up a value in a Hash Table (worst case)?", options: ["O(1)", "O(log n)", "O(n)", "O(n log n)"], correctIndex: 2, explanation: "If all elements hash to the same bucket (collision), lookup degrades to O(n)." },
-    { question: "Which algorithm finds the Minimum Spanning Tree?", options: ["Dijkstra's", "Bellman-Ford", "Kruskal's", "Floyd-Warshall"], correctIndex: 2, explanation: "Kruskal's algorithm (along with Prim's) is used to find an MST." }
+    {
+      question: "You are designing an in-memory LRU (Least Recently Used) cache for high-throughput API responses. The system must support O(1) lookups and O(1) eviction of the oldest entry upon capacity overflow. Which architectural data structure combination best guarantees these requirements?",
+      options: [
+        "A standard dynamic array paired with binary search, sorting elements whenever an item is accessed",
+        "A Hash Map paired with a Doubly Linked List, where the map enables O(1) node lookup and the list enables O(1) node removal and re-insertion at the head",
+        "A Min-Heap prioritized by access timestamp combined with a Singly Linked List",
+        "A Balanced Binary Search Tree (Red-Black tree) indexing nodes by monotonic insertion sequence"
+      ],
+      correctIndex: 1,
+      explanation: "A Hash Map provides O(1) key-to-node pointer lookup. A Doubly Linked List allows detaching any node in O(1) time without traversing, and moving it to the head as most recently used or evicting from the tail in O(1)."
+    },
+    {
+      question: "In a financial exchange order-matching engine, price levels are searched and updated millions of times per second. Why is a balanced Binary Search Tree (such as Red-Black or AVL) preferred over an unaugmented Hash Table for order-book price depth queries?",
+      options: [
+        "Hash tables cannot store numeric keys or price values accurately due to 64-bit floating point limitations",
+        "Balanced BSTs support range queries, finding the nearest ceiling/floor price, and ordered min/max retrievals in O(log n) time, which hash tables cannot do in O(1)",
+        "Balanced BSTs provide O(1) amortized insertion whereas Hash Tables require O(n^2) worst-case collision chaining",
+        "Hash tables require full rehashing on every insert which blocks lock-free concurrency"
+      ],
+      correctIndex: 1,
+      explanation: "While Hash Tables provide O(1) average exact lookups, they are inherently unordered. Order matching requires finding best bids/asks, floor/ceiling prices, and iterating over price intervals in sorted order, which balanced BSTs achieve in O(log n) time."
+    },
+    {
+      question: "You are implementing a build dependency resolver for a monorepo containing thousands of interconnected packages. Which algorithm detects circular dependencies and produces a valid compilation sequence?",
+      options: [
+        "Kruskal's Algorithm using Disjoint Set Union to build a minimum spanning tree",
+        "Topological Sort using Kahn's algorithm (in-degree tracking) or Depth First Search with 3-color node state tracking (unvisited, visiting, visited)",
+        "Floyd-Warshall all-pairs shortest path matrix relaxation",
+        "Dijkstra's single-source shortest path algorithm using a Fibonacci heap"
+      ],
+      correctIndex: 1,
+      explanation: "Dependency graphs are Directed Acyclic Graphs (DAGs). Topological sort computes an execution order where all dependencies precede dependents. A cycle is detected if a back-edge is encountered during DFS (encountering a node currently in the 'visiting' recursion stack) or if in-degrees do not reach zero in Kahn's algorithm."
+    },
+    {
+      question: "During a code review, an engineer notes that a standard QuickSort implementation degrades to O(n²) time complexity on production payloads. What scenario triggers this worst-case performance, and how is it mitigated?",
+      options: [
+        "The input array contains strictly unique random values; mitigated by switching to Bubble Sort",
+        "The input array is already sorted or nearly sorted when choosing the first or last element as pivot; mitigated by using randomized pivot selection or the Median-of-Three strategy",
+        "The array size exceeds 2^32 elements; mitigated by upgrading from 32-bit to 64-bit indices",
+        "All elements are powers of two causing integer overflow in the partition index"
+      ],
+      correctIndex: 1,
+      explanation: "When the pivot is consistently chosen as the extremum (first or last element) in already sorted or identical-key inputs, partitioning splits the array into sizes 0 and n-1, producing an O(n²) recursion tree. Choosing randomized pivots or median-of-three guarantees balanced partitions with high probability."
+    },
+    {
+      question: "A latency-critical microservice monitors network routing across an unweighted graph of microservice nodes. What is the most computationally efficient algorithm to determine the minimum number of network hops between two services?",
+      options: [
+        "Depth First Search (DFS) with recursive backtracking",
+        "Breadth First Search (BFS) starting from the source service node",
+        "Bellman-Ford algorithm with edge relaxation over V iterations",
+        "Prim's greedy minimum spanning tree algorithm"
+      ],
+      correctIndex: 1,
+      explanation: "In an unweighted graph, BFS explores vertices layer by layer (by distance 1, 2, 3 hops). The first time the destination node is visited, the path is guaranteed to be the shortest hop path in O(V + E) time, whereas DFS may traverse deep suboptimal branches first."
+    },
+    {
+      question: "You need to compute the maximum sum of any contiguous subarray of size k across a real-time stream of 10 million telemetry events. How should you structure your algorithm for optimal performance?",
+      options: [
+        "Iterate through every starting index and run an inner loop summing the subsequent k elements in O(n · k) time",
+        "Maintain a sliding window of size k: calculate the initial window sum, then slide forward by adding the new incoming element and subtracting the element leaving the window in O(1) per step, yielding O(n) total time",
+        "Sort the entire telemetry array first in O(n log n) and select the top k elements",
+        "Construct a binary search tree of all prefixes and execute range interval queries in O(n log k)"
+      ],
+      correctIndex: 1,
+      explanation: "The Sliding Window pattern avoids recalculating duplicate overlapping subsegments. Shifting the window requires only 1 addition and 1 subtraction, processing each element in O(1) time with O(1) auxiliary space."
+    },
+    {
+      question: "When finding the Top K most frequent search queries in a large dataset of N terms, which approach minimizes memory usage while achieving O(N log K) time complexity?",
+      options: [
+        "Sort all N unique elements using MergeSort in O(N log N) time and slice the first K elements",
+        "Count frequencies into a Hash Map, then maintain a Min-Heap of size K: if an incoming frequency exceeds the heap root, pop the root and insert the new element",
+        "Construct a complete Max-Heap of all N elements and perform K extract-max operations",
+        "Insert all queries into a Singly Linked List and execute linear scan K times"
+      ],
+      correctIndex: 1,
+      explanation: "Maintaining a Min-Heap capped at size K ensures heap operations take O(log K) rather than O(log N). The heap root always holds the K-th largest frequency seen so far, keeping memory bounded strictly to O(K) rather than retaining all N elements in a heap."
+    },
+    {
+      question: "You are building a search autocomplete service that must support prefix matching against 500,000 dictionary words. Why is a Trie (Prefix Tree) architecturally superior to a Hash Map for this feature?",
+      options: [
+        "Tries use zero memory overhead compared to primitive strings",
+        "A Trie allows finding all words sharing a common prefix of length L in O(L + M) time (where M is the number of matching words), whereas a Hash Map cannot search prefixes without scanning all keys",
+        "Hash Maps cannot store alphanumeric strings longer than 32 characters due to hashing limits",
+        "Tries execute search queries concurrently without thread locking"
+      ],
+      correctIndex: 1,
+      explanation: "A Hash Map only supports exact key lookups (O(1)). Searching for prefixes like 'eng*' in a Hash Map requires scanning all keys in O(N). A Trie navigates directly to the prefix node in O(L) steps and traverses descendants to produce completions."
+    },
+    {
+      question: "In deeply nested trees or graphs with depths up to 100,000, recursive Depth First Search causes JVM/V8 Call Stack Overflow errors. How should an engineer rewrite the traversal to safely handle arbitrary depths?",
+      options: [
+        "Increase CPU clock frequency to accelerate stack frame clearance",
+        "Convert the recursive traversal to an iterative DFS using an explicit heap-allocated Stack data structure",
+        "Switch the recursive calls to execute within JavaScript setTimeout closures",
+        "Split the tree across multiple threads without synchronizing nodes"
+      ],
+      correctIndex: 1,
+      explanation: "Call stacks have strict memory limits (typically 1MB-8MB), overflowing after a few thousand frames. Moving recursion to an iterative loop with an explicit heap-allocated Stack (or Queue for BFS) removes the call stack limitation, safely utilizing available heap memory."
+    },
+    {
+      question: "You are designing a rate-limiting algorithm that restricts client requests to 100 requests per minute with smooth burst handling. What is the fundamental difference between the Token Bucket and Fixed Window Counter algorithms?",
+      options: [
+        "Fixed Window counters allow burst traffic to scale indefinitely without tracking limits",
+        "Fixed Window counters suffer from the 2x burst boundary problem (allowing up to 200 requests across a boundary transition), whereas Token Bucket refuels continuously and smooths burst spikes",
+        "Token Bucket requires O(n) memory per request while Fixed Window requires zero memory",
+        "Token Bucket rejects all requests that arrive within 10 milliseconds of each other"
+      ],
+      correctIndex: 1,
+      explanation: "Fixed Window resets counts at fixed intervals, meaning 100 requests at 0:59 followed by 100 requests at 1:01 yields 200 requests within 2 seconds. Token Bucket refuels tokens at a constant rate, accommodating transient bursts up to bucket capacity while enforcing a smooth long-term rate."
+    }
   ],
+
   springboot: [
-    { question: "What is the default embedded server in Spring Boot?", options: ["Jetty", "Undertow", "Tomcat", "GlassFish"], correctIndex: 2, explanation: "Spring Boot uses Apache Tomcat as the default embedded web server." },
-    { question: "Which annotation is used to mark a class as a RESTful controller?", options: ["@Controller", "@RestController", "@WebController", "@APIController"], correctIndex: 1, explanation: "@RestController is a convenience annotation that combines @Controller and @ResponseBody." },
-    { question: "What does @SpringBootApplication do?", options: ["It replaces @Configuration, @EnableAutoConfiguration, and @ComponentScan", "It starts the Tomcat server", "It configures the database connection", "It creates the main method"], correctIndex: 0, explanation: "It is a meta-annotation that pulls in component scanning, auto-configuration, and configuration support." },
-    { question: "Which annotation injects dependencies in Spring?", options: ["@Injectable", "@Autowired", "@Provide", "@Bean"], correctIndex: 1, explanation: "@Autowired automatically injects the required bean by type." },
-    { question: "How do you externalize configuration in Spring Boot?", options: ["Using XML files only", "Using application.properties or application.yml", "By hardcoding in configuration classes", "Through the pom.xml file"], correctIndex: 1, explanation: "Spring Boot reads properties from application.properties or application.yml by default." },
-    { question: "What is Spring Boot Actuator used for?", options: ["Security authentication", "Monitoring and managing the application", "Database migrations", "Creating REST APIs"], correctIndex: 1, explanation: "Actuator provides built-in endpoints (like /health, /metrics) for monitoring." },
-    { question: "What is the purpose of @Transactional?", options: ["To define a REST endpoint", "To manage database transactions automatically", "To inject a repository", "To log method execution time"], correctIndex: 1, explanation: "It ensures a method executes within a database transaction, rolling back on runtime exceptions." },
-    { question: "Which dependency is required for Spring Data JPA?", options: ["spring-boot-starter-web", "spring-boot-starter-jdbc", "spring-boot-starter-data-jpa", "spring-data-hibernate"], correctIndex: 2, explanation: "The data-jpa starter brings in Hibernate, Spring Data, and related dependencies." },
-    { question: "How can you run code at application startup?", options: ["Implement CommandLineRunner or ApplicationRunner", "Use @Startup annotation", "Put code in the constructor of a Controller", "Use @BeforeStart"], correctIndex: 0, explanation: "Both interfaces provide a run() method that executes right after the context is loaded." },
-    { question: "What is the default scope of a Spring Bean?", options: ["Prototype", "Request", "Session", "Singleton"], correctIndex: 3, explanation: "By default, Spring creates only one instance of a bean per application context." },
-    { question: "How do you handle exceptions globally in Spring MVC?", options: ["Using @GlobalException", "Using @ControllerAdvice", "Using try-catch in every method", "Using @ExceptionHandler on the main class"], correctIndex: 1, explanation: "@ControllerAdvice allows you to handle exceptions across the whole application in one global component." },
-    { question: "What does the 'N+1 query problem' refer to in Hibernate?", options: ["Executing N queries instead of 1 due to lazy loading of collections", "A bug in SQL syntax", "Inserting N records one by one", "Pagination offset logic"], correctIndex: 0, explanation: "It happens when an ORM executes 1 query to get parent entities, and N additional queries to fetch their children." },
-    { question: "Which annotation reads values from application.properties?", options: ["@Env", "@Value", "@Property", "@Inject"], correctIndex: 1, explanation: "@Value(\"${property.name}\") injects the value of a property." },
-    { question: "What is the purpose of Spring Profiles?", options: ["To profile memory usage", "To map different URLs", "To segregate parts of application configuration for different environments", "To create user profiles"], correctIndex: 2, explanation: "Profiles allow activating different beans or configurations based on the environment (e.g., dev, prod)." },
-    { question: "Which method of dependency injection is most recommended by the Spring team?", options: ["Field Injection", "Setter Injection", "Constructor Injection", "Interface Injection"], correctIndex: 2, explanation: "Constructor injection allows fields to be final, promotes immutability, and makes testing easier." },
-    { question: "What is HikariCP in Spring Boot?", options: ["A JSON parser", "A security filter", "The default JDBC connection pool", "A caching provider"], correctIndex: 2, explanation: "HikariCP is a very fast and lightweight JDBC connection pool used by default." },
-    { question: "How do you enable Cross-Origin Resource Sharing (CORS)?", options: ["@CrossOrigin", "@CorsEnable", "@AllowOrigin", "It is enabled by default"], correctIndex: 0, explanation: "The @CrossOrigin annotation can be applied at the controller or method level to allow cross-origin requests." },
-    { question: "What does @ConditionalOnProperty do?", options: ["Creates a bean only if a property is present and matches a value", "Validates request parameters", "Conditionally redirects URLs", "Applies a CSS property"], correctIndex: 0, explanation: "It's used in auto-configuration to load beans based on configuration properties." },
-    { question: "How can you validate a request body in a Spring REST controller?", options: ["@Check", "@Valid or @Validated", "@AssertTrue", "@ValidateBody"], correctIndex: 1, explanation: "@Valid triggers validation on the annotated object, throwing an exception if constraints are violated." },
-    { question: "What is the role of the DispatcherServlet?", options: ["It manages database connections", "It is the front controller that routes HTTP requests to the appropriate handler", "It sends emails", "It serves static HTML files only"], correctIndex: 1, explanation: "DispatcherServlet acts as the Front Controller, routing incoming requests to controllers." }
+    {
+      question: "In a Spring Boot application, Bean A injects Bean B via constructor injection, and Bean B injects Bean A via constructor injection. What happens during ApplicationContext initialization, and what is the best architectural fix?",
+      options: [
+        "Spring automatically serializes one bean to disk and resolves the dependency at runtime",
+        "The ApplicationContext fails to start with a BeanCurrentlyInCreationException due to an unresolvable circular dependency; resolved by refactoring design to eliminate cyclical dependencies or using `@Lazy` injection",
+        "Spring ignores Bean B and instantiates Bean A with a null reference",
+        "The JVM encounters an infinite heap allocation and terminates with an OutOfMemoryError"
+      ],
+      correctIndex: 1,
+      explanation: "Constructor injection requires the dependent bean to be fully constructed before creating the target bean. When both beans require each other in their constructors, neither can be instantiated, causing BeanCurrentlyInCreationException. Refactoring with an intermediary service or applying `@Lazy` (which injects a dynamic proxy) resolves the cycle."
+    },
+    {
+      question: "A high-traffic e-commerce microservice experiences significant database query spikes when fetching Orders and their associated OrderItems using Spring Data JPA. What is the root cause of this 'N+1 query problem', and how is it resolved?",
+      options: [
+        "Hibernate executes 1 query for the N orders, plus N separate SELECT queries for each order's items due to lazy loading; resolved using `JOIN FETCH` in JPQL or `@EntityGraph`",
+        "Database connection pool exhaustion forces JDBC to batch queries into N+1 chunks; resolved by doubling pool size",
+        "The SQL database does not support primary keys on child tables; resolved by enabling auto-increment",
+        "Spring Boot Actuator runs background health checks that duplicate every query N times"
+      ],
+      correctIndex: 0,
+      explanation: "The N+1 problem occurs when fetching a list of N parent entities with lazily-loaded child associations. Iterating over parents triggers N additional queries to fetch children. Specifying a `JOIN FETCH` query or `@EntityGraph` fetches parents and children in a single joined SQL query."
+    },
+    {
+      question: "An engineer annotates a public method with `@Transactional`. Inside the method, a checked `IOException` is thrown during file processing. By default, what does Spring's transaction manager do?",
+      options: [
+        "The transaction is immediately rolled back for all exceptions including checked exceptions",
+        "By default, Spring only rolls back transactions on unchecked exceptions (RuntimeExceptions and Errors); the database changes will commit unless `rollbackFor = Exception.class` is explicitly specified",
+        "Spring converts the checked exception into a 500 HTTP response and retries the transaction 3 times",
+        "The database connection is aborted and severed from the connection pool"
+      ],
+      correctIndex: 1,
+      explanation: "By default in Spring declarative transactions, rollback occurs automatically ONLY for unchecked exceptions (subclasses of RuntimeException and Error). Checked exceptions (like IOException, SQLException) will NOT trigger a rollback unless configured via `@Transactional(rollbackFor = Exception.class)`."
+    },
+    {
+      question: "In a Spring Boot MVC controller, a developer calls a `@Transactional` method `processPayment()` from another method `checkout()` within the exact same service class (`this.processPayment()`). Why does the transaction fail to start?",
+      options: [
+        "Spring Boot does not allow multiple methods in a single service class to interact with databases",
+        "Spring's `@Transactional` relies on dynamic AOP proxies; direct internal calls (`this.method()`) bypass the proxy wrapper, preventing transaction interception",
+        "Database drivers require asynchronous dispatch to activate transaction locks",
+        "Spring Security intercepts internal method calls and rejects unauthenticated threads"
+      ],
+      correctIndex: 1,
+      explanation: "Spring wraps `@Transactional` beans in an AOP proxy. When an external caller invokes the bean, the call goes through the proxy which starts/commits the transaction. When a method calls another method on `this` within the same class, the call bypasses the proxy, and no transaction advice is executed."
+    },
+    {
+      question: "Under high concurrent load with I/O-bound database operations, a Spring Boot 3 service on Java 21 experiences thread starvation. Which architectural feature in Spring Boot 3.2+ provides lightweight concurrency without rewriting code to reactive WebFlux?",
+      options: [
+        "Enabling Java 21 Virtual Threads (Project Loom) via `spring.threads.virtual.enabled=true`, allowing millions of lightweight threads to yield during blocking I/O",
+        "Switching the embedded server to Apache Derby in-memory mode",
+        "Increasing the operating system kernel stack size to 512MB per thread",
+        "Disabling Hibernate second-level cache"
+      ],
+      correctIndex: 0,
+      explanation: "Spring Boot 3.2+ fully supports Java 21 Virtual Threads via `spring.threads.virtual.enabled=true`. Virtual threads decouple Java threads from OS kernel threads, allowing blocking operations (like JDBC or REST client calls) to park the virtual thread without blocking an underlying OS carrier thread."
+    },
+    {
+      question: "What is the security risk of configuring `@CrossOrigin(origins = \"*\")` on a Spring Boot REST API that uses session cookies or Authorization credentials?",
+      options: [
+        "Browsers will refuse to send requests with credentials (cookies, auth headers) when `Access-Control-Allow-Origin` is a wildcard `*`, and it leaves non-credentialed APIs open to unauthorized cross-origin requests",
+        "Wildcard origins disable SSL/TLS encryption across client connections",
+        "The embedded Tomcat server will automatically reboot upon receiving foreign origins",
+        "Spring Security automatically purges all registered user accounts"
+      ],
+      correctIndex: 0,
+      explanation: "Modern browsers adhere to the CORS specification: if `Access-Control-Allow-Credentials` is true, `Access-Control-Allow-Origin` cannot be a wildcard `*` (it will be blocked by browsers). Furthermore, allowing wildcard origins allows arbitrary third-party web origins to read response payloads from internal endpoints."
+    },
+    {
+      question: "You need to externalize configuration across Dev, QA, and Production environments in Spring Boot. What is the standard idiom to activate environment-specific properties without modifying source code?",
+      options: [
+        "Hardcoding credentials in java files and commenting them out before deployment",
+        "Creating `application-dev.yml` and `application-prod.yml`, and setting the active profile via the `SPRING_PROFILES_ACTIVE` environment variable or `-Dspring.profiles.active` argument",
+        "Renaming `pom.xml` build artifacts dynamically in the target container",
+        "Using `@Profile` on every single Spring bean constructor"
+      ],
+      correctIndex: 1,
+      explanation: "Spring Boot profiles allow splitting environment-specific configurations into separate files (e.g., `application-prod.yml`). Setting the `SPRING_PROFILES_ACTIVE=prod` environment variable loads those overrides seamlessly without modifying application binaries."
+    },
+    {
+      question: "In Spring Boot Actuator, why is it critical to restrict public exposure of endpoints such as `/actuator/env`, `/actuator/heapdump`, and `/actuator/beans`?",
+      options: [
+        "Actuator endpoints consume excessive CPU power and crash the server on every GET request",
+        "They can leak sensitive environment variables, database credentials, API keys, and memory snapshots containing plain-text user secrets to unauthenticated attackers",
+        "Actuator endpoints overwrite database tables with diagnostic metrics",
+        "They disable TLS certificates for all HTTP requests"
+      ],
+      correctIndex: 1,
+      explanation: "Actuator diagnostic endpoints expose comprehensive internal system state: `/env` reveals environment variables and property sources (often containing database passwords or secret keys), while `/heapdump` provides raw memory dumps that can expose decrypt keys and tokens. Only `/health` and `/info` should typically be public."
+    }
   ],
+
   system_design: [
-    { question: "What is the CAP Theorem?", options: ["Consistency, Availability, Partition Tolerance", "Concurrency, Availability, Persistence", "Consistency, Asynchrony, Partitioning", "Caching, Availability, Performance"], correctIndex: 0, explanation: "CAP theorem states a distributed system can only provide two of the three simultaneously." },
-    { question: "Which caching strategy writes data to the cache and database simultaneously?", options: ["Write-behind", "Write-through", "Cache-aside", "Read-through"], correctIndex: 1, explanation: "Write-through ensures consistency between cache and DB, though it adds write latency." },
-    { question: "What is the purpose of Consistent Hashing?", options: ["To encrypt passwords safely", "To minimize key reorganization when nodes are added or removed", "To hash JSON web tokens", "To detect data corruption"], correctIndex: 1, explanation: "It maps keys and nodes on a ring, so adding/removing a node only affects adjacent keys." },
-    { question: "In a microservices architecture, what is a Circuit Breaker used for?", options: ["To prevent network loops", "To stop requests to a failing service to prevent cascading failures", "To encrypt traffic between services", "To balance load across nodes"], correctIndex: 1, explanation: "It fails fast when a downstream service is struggling, allowing it time to recover." },
-    { question: "What does 'Eventual Consistency' mean?", options: ["Data will always be consistent immediately", "Data will become consistent over time, given no new updates", "Data is consistent only on reads", "Data is never fully consistent"], correctIndex: 1, explanation: "It guarantees that if no new updates are made to a given data item, eventually all accesses will return the last updated value." },
-    { question: "Which database is fundamentally a Key-Value store?", options: ["PostgreSQL", "MongoDB", "Redis", "Cassandra"], correctIndex: 2, explanation: "Redis is an in-memory data structure store, used primarily as a key-value database." },
-    { question: "What is a Content Delivery Network (CDN) primarily used for?", options: ["Executing backend code", "Caching static assets geographically closer to users", "Storing relational data", "Managing microservice routing"], correctIndex: 1, explanation: "CDNs reduce latency by serving static files from edge servers near the user." },
-    { question: "What is the difference between Horizontal and Vertical scaling?", options: ["Horizontal = adding more machines, Vertical = adding more power (CPU/RAM) to one machine", "Horizontal = scaling databases, Vertical = scaling web servers", "They mean the same thing", "Horizontal = adding storage, Vertical = adding compute"], correctIndex: 0, explanation: "Scaling out (horizontal) vs scaling up (vertical)." },
-    { question: "Which messaging system is designed as a distributed append-only log?", options: ["RabbitMQ", "ActiveMQ", "Apache Kafka", "Amazon SQS"], correctIndex: 2, explanation: "Kafka is a distributed event streaming platform built around an append-only commit log." },
-    { question: "What does 'ACID' stand for in database systems?", options: ["Atomicity, Consistency, Isolation, Durability", "Availability, Concurrency, Integrity, Durability", "Asynchronous, Consistent, Isolated, Distributed", "Authentication, Consistency, Isolation, Database"], correctIndex: 0, explanation: "ACID properties guarantee that database transactions are processed reliably." },
-    { question: "How does a 'Token Bucket' algorithm work in rate limiting?", options: ["Tokens are added at a fixed rate; each request consumes a token.", "Tokens leak out at a constant rate.", "Requests are dropped if they exceed a hard limit per minute.", "Tokens are passed between servers in a ring."], correctIndex: 0, explanation: "Token bucket allows bursts of traffic up to the bucket capacity, refilling at a steady rate." },
-    { question: "What is a reverse proxy?", options: ["A server that sits in front of backend servers and forwards client requests to them", "A server that routes traffic out to the internet", "A database replication tool", "A DNS resolver"], correctIndex: 0, explanation: "Nginx and HAProxy are common reverse proxies used for load balancing, caching, and SSL termination." },
-    { question: "Why might you choose a NoSQL database over a SQL database?", options: ["For strict ACID transactions", "For flexible schemas and high write throughput at scale", "For complex JOIN queries", "To reduce storage costs"], correctIndex: 1, explanation: "NoSQL databases (like Cassandra or MongoDB) scale horizontally more easily and handle unstructured data well." },
-    { question: "What is an Idempotency Key used for in APIs?", options: ["To encrypt the payload", "To safely retry a request without causing duplicate side-effects (e.g. double charging)", "To authenticate the user", "To route the request to a specific shard"], correctIndex: 1, explanation: "If a request with the same idempotency key is sent twice, the server processes it only once." },
-    { question: "What is Database Sharding?", options: ["Partitioning data horizontally across multiple database servers", "Creating indexes to speed up queries", "Creating read replicas", "Backing up the database to cold storage"], correctIndex: 0, explanation: "Sharding splits a large table into smaller chunks (shards) spread across multiple nodes." },
-    { question: "What is the 'Thundering Herd' problem?", options: ["Too many servers crashing at once", "A large number of processes waking up simultaneously to handle an event, causing severe contention", "A database running out of disk space", "Network packets arriving out of order"], correctIndex: 1, explanation: "Often happens when a cache key expires and hundreds of requests simultaneously query the DB to rebuild it." },
-    { question: "In a Master-Slave replication setup, how is replication lag defined?", options: ["The time it takes to write to the master", "The delay between a write on the master and it appearing on the slave", "The time to elect a new master", "The ping latency between nodes"], correctIndex: 1, explanation: "Replication lag occurs in async replication where read replicas are slightly behind the primary." },
-    { question: "What is the CQRS pattern?", options: ["Command Query Responsibility Segregation - separating read and write models", "Cache Query Routing System", "Consistent Quorum Replication Strategy", "Container Quality Rating System"], correctIndex: 0, explanation: "CQRS uses different models to update information than the model you use to read information." },
-    { question: "What role does ZooKeeper typically play in a distributed system?", options: ["Load balancing HTTP traffic", "Serving HTML pages", "Configuration management, synchronization, and naming registry", "Storing large video files"], correctIndex: 2, explanation: "Systems like Kafka historically used ZooKeeper to manage cluster state and metadata." },
-    { question: "Which load balancing algorithm sends requests to the server with the fewest active connections?", options: ["Round Robin", "IP Hash", "Least Connections", "Random"], correctIndex: 2, explanation: "Least Connections dynamically routes traffic to the least busy server." }
+    {
+      question: "You are designing a distributed cache cluster (such as Redis or Memcached) across 20 nodes. When scaling the cluster by adding or removing nodes, how does Consistent Hashing prevent massive cache invalidation?",
+      options: [
+        "It broadcasts every cached key to all 20 nodes simultaneously so no keys are ever lost",
+        "It maps both cache keys and server nodes onto a virtual 360-degree hash ring; when a node is added or removed, only keys in the immediate adjacent ring segment are remapped (k/N keys on average)",
+        "It maintains a single centralized master database that locks all read requests during node rebalancing",
+        "It uses modulo hashing `hash(key) % N`, which automatically preserves all key mappings when N changes"
+      ],
+      correctIndex: 1,
+      explanation: "In traditional modulo hashing (`hash(key) % N`), changing the node count N rehashes and moves virtually 100% of keys. Consistent Hashing maps keys and servers to a circular ring, ensuring adding or removing a node only redistributes ~1/N of keys, preventing massive cache miss thundering herds."
+    },
+    {
+      question: "A high-profile social media account publishes a post that suddenly expires from the Redis cache. Millions of concurrent users immediately request the same post, overwhelming the downstream SQL database. What is this phenomenon called, and how is it mitigated?",
+      options: [
+        "Split-Brain condition; mitigated by adding additional secondary database replicas",
+        "Cache Stampede (Thundering Herd); mitigated by using distributed mutex locks, probabilistic early expiration (XFetch), or background cache refreshing",
+        "Deadlock condition; mitigated by killing active database connections",
+        "Write-Behind failure; mitigated by disabling database indexes"
+      ],
+      correctIndex: 1,
+      explanation: "Cache Stampede occurs when a high-traffic key expires, causing thousands of concurrent requests to experience a cache miss simultaneously and hammer the primary database to recompute it. Mutex locking (only one thread computes and repopulates the cache while others wait) or refreshing before expiration prevents this surge."
+    },
+    {
+      question: "A globally distributed messaging service requires a distributed ID generator that produces 64-bit unique IDs that are roughly time-sortable without a centralized database coordinator. Which architecture meets these criteria?",
+      options: [
+        "Database AUTO_INCREMENT with two-phase commit across all international data centers",
+        "Twitter Snowflake architecture: 1-bit sign, 41-bit timestamp, 10-bit machine/data center ID, and 12-bit sequence counter generated locally per node",
+        "UUID version 4 randomly generated strings formatted as 128-bit hexadecimals",
+        "MD5 hashing of the user's IP address combined with the current millisecond"
+      ],
+      correctIndex: 1,
+      explanation: "Twitter Snowflake generates 64-bit IDs that fit in standard integers, are naturally ordered by timestamp (high bits), and generate millions of IDs per second per machine without inter-node network communication or centralized database bottlenecks."
+    },
+    {
+      question: "In distributed systems, what fundamental trade-off does the CAP theorem articulate when a network partition (P) inevitably occurs?",
+      options: [
+        "The system can achieve infinite throughput by sacrificing security protocols",
+        "The system must choose between Consistency (refusing or failing requests that cannot guarantee the latest write) and Availability (returning the most recent local data even if stale)",
+        "The system must increase network bandwidth to eradicate latency entirely",
+        "The system must switch to SQL databases to preserve both Consistency and Availability simultaneously"
+      ],
+      correctIndex: 1,
+      explanation: "Network partitions (nodes unable to communicate across network cuts) are an unavoidable reality of distributed hardware. When a partition occurs, an architecture must choose whether to continue answering requests with potentially stale data (Availability) or reject requests until synchronization is verified (Consistency)."
+    },
+    {
+      question: "An e-commerce order processing pipeline uses Apache Kafka for asynchronous communication between services. How does Kafka guarantee strict message order for orders placed by the same customer?",
+      options: [
+        "By setting total partitions to 1 across the entire Kafka cluster",
+        "By publishing messages using the `customerId` as the partition key, ensuring all messages for that customer map to the same partition where order is guaranteed",
+        "By enabling two-phase locking on every Kafka consumer thread",
+        "By storing message logs in an external PostgreSQL relational database"
+      ],
+      correctIndex: 1,
+      explanation: "Kafka guarantees strict FIFO ordering strictly within an individual partition, not across multiple partitions. By using `customerId` as the message key, Kafka's hash partitioner routes all events for that specific customer into the exact same partition, preserving sequence."
+    },
+    {
+      question: "A ride-sharing application needs to store and query the real-time geographic locations of 500,000 active drivers to match them with nearby passengers. Which indexing data structure is most appropriate?",
+      options: [
+        "A standard B-Tree index on driver IDs",
+        "A Spatial Index using Geospatial Hashing (Geohash) or a QuadTree / R-Tree to index 2D latitude and longitude bounding boxes",
+        "A Singly Linked List of GPS coordinates sorted alphabetically by city name",
+        "An in-memory Bloom Filter tracking active latitude numbers"
+      ],
+      correctIndex: 1,
+      explanation: "Traditional 1D B-Tree indexes cannot efficiently execute 2D proximity bounding-box queries (finding coordinates within radius R). QuadTrees recursively subdivide 2D planes into quadrants, while Geohashes encode 2D coordinates into 1D hierarchical strings, allowing efficient spatial range scans."
+    },
+    {
+      question: "You are designing an API Gateway that protects backend microservices from denial-of-service spikes. If a downstream service starts returning 500 errors or timing out, which architectural resilience pattern prevents cascading system failure?",
+      options: [
+        "The Circuit Breaker pattern (with Closed, Open, and Half-Open states) that trips after a threshold of failures, failing fast without overloading the downstream service",
+        "The Singleton pattern ensuring only 1 client request is processed globally per minute",
+        "The Write-Back pattern that saves failed HTTP requests into the user's browser cookie",
+        "The Master-Slave database replication failover protocol"
+      ],
+      correctIndex: 0,
+      explanation: "A Circuit Breaker monitors downstream failure rates. When failures exceed a threshold, it trips to 'Open', failing incoming calls immediately without consuming server threads or hammering the struggling dependency. After a cooldown, it moves to 'Half-Open' to probe if the service has recovered."
+    },
+    {
+      question: "What is the key difference between Database Sharding and Read-Replication when scaling a relational database?",
+      options: [
+        "Read-replication divides write workloads across multiple disks while sharding only scales reads",
+        "Read-replication copies data to multiple read-only instances to scale read queries, whereas Sharding partitions both read and write data across multiple distinct databases by a shard key to scale write capacity and storage",
+        "Sharding is only possible on NoSQL databases like MongoDB and cannot be applied to PostgreSQL",
+        "Read-replication removes the need for database backups entirely"
+      ],
+      correctIndex: 1,
+      explanation: "Read replicas help when read volume exceeds single-node capacity, but all writes still flow to the single primary master. When data size or write throughput exceeds what a single machine can handle, Sharding partitions the entire dataset across separate database nodes using a shard key."
+    }
   ],
+
   lld: [
-    { question: "What does the 'S' in SOLID stand for?", options: ["Singleton Principle", "Single Responsibility Principle", "System Reliability Principle", "Software Reusability Principle"], correctIndex: 1, explanation: "A class should have one, and only one, reason to change." },
-    { question: "Which design pattern is used to ensure only one instance of a class exists?", options: ["Factory", "Observer", "Singleton", "Decorator"], correctIndex: 2, explanation: "The Singleton pattern restricts instantiation of a class to a single object." },
-    { question: "What is the Observer pattern used for?", options: ["Creating objects without specifying the exact class", "Defining a one-to-many dependency so that when one object changes state, its dependents are notified", "Iterating over a collection", "Encapsulating a request as an object"], correctIndex: 1, explanation: "It is heavily used in event-driven systems and UI frameworks (Pub/Sub)." },
-    { question: "Which principle states that subclasses should be substitutable for their base classes?", options: ["Dependency Inversion", "Open/Closed Principle", "Liskov Substitution Principle", "Interface Segregation"], correctIndex: 2, explanation: "LSP ensures that inheritance is used correctly without breaking expected behavior." },
-    { question: "What is the purpose of the Factory Method pattern?", options: ["To create an instance of a class without exposing the instantiation logic to the client", "To limit memory usage by sharing objects", "To attach additional responsibilities to an object dynamically", "To represent an operation to be performed on elements of an object structure"], correctIndex: 0, explanation: "It delegates the creation of objects to subclasses." },
-    { question: "How does the Decorator pattern differ from inheritance?", options: ["It adds behavior dynamically at runtime using composition", "It removes behavior", "It is compiled statically", "There is no difference"], correctIndex: 0, explanation: "Decorator wraps an object to add behavior without creating a massive subclass hierarchy." },
-    { question: "Which pattern encapsulates an algorithm inside a class, allowing them to be interchangeable?", options: ["State Pattern", "Strategy Pattern", "Template Method", "Command Pattern"], correctIndex: 1, explanation: "Strategy pattern lets the algorithm vary independently from clients that use it." },
-    { question: "What is the Open/Closed Principle?", options: ["Classes should be open for extension but closed for modification", "Software should be open source", "Database connections should be closed automatically", "Methods should be open to all packages"], correctIndex: 0, explanation: "You should be able to add new functionality without touching existing tested code." },
-    { question: "Which pattern is used to construct a complex object step by step?", options: ["Prototype", "Abstract Factory", "Builder", "Facade"], correctIndex: 2, explanation: "Builder separates the construction of a complex object from its representation." },
-    { question: "What does the Facade pattern provide?", options: ["A unified, simplified interface to a set of interfaces in a subsystem", "A way to duplicate objects", "A method to delay object creation", "A way to traverse a tree"], correctIndex: 0, explanation: "Facade hides the complexities of a larger system behind a simpler API." },
-    { question: "What is Dependency Injection?", options: ["Injecting SQL into a database", "A technique where an object receives other objects that it depends on, rather than creating them itself", "A method to load DLLs at runtime", "Injecting environment variables into code"], correctIndex: 1, explanation: "DI implements Inversion of Control, making code modular and testable." },
-    { question: "Which pattern allows an object to alter its behavior when its internal state changes?", options: ["State Pattern", "Strategy Pattern", "Observer Pattern", "Memento Pattern"], correctIndex: 0, explanation: "The State pattern encapsulates state-specific behaviors in separate classes." },
-    { question: "What is the Interface Segregation Principle?", options: ["Interfaces should be as large as possible", "No client should be forced to depend on methods it does not use", "Interfaces must be segregated into different packages", "Classes should not implement interfaces"], correctIndex: 1, explanation: "Prefer many small, client-specific interfaces over one 'fat' interface." },
-    { question: "What does 'Composition over Inheritance' mean?", options: ["Inheritance should never be used", "Classes should achieve polymorphic behavior and code reuse by containing other classes rather than extending them", "Composing music is harder than inheriting it", "Multiple inheritance is preferred in Java"], correctIndex: 1, explanation: "Composition provides greater flexibility and avoids the fragile base class problem." },
-    { question: "Which pattern represents a request as an object, allowing parameterization of clients with queues or logs?", options: ["Command Pattern", "Chain of Responsibility", "Mediator", "Visitor"], correctIndex: 0, explanation: "Command encapsulates all data required for an action (e.g., used for Undo operations)." },
-    { question: "What is the primary benefit of the Flyweight pattern?", options: ["Minimizing memory usage by sharing as much data as possible with similar objects", "Creating objects faster", "Adding thread safety", "Simplifying the API"], correctIndex: 0, explanation: "It caches intrinsic state (like character font/size in a text editor) to save memory." },
-    { question: "Which pattern lets you traverse elements of a collection without exposing its underlying representation?", options: ["Visitor", "Iterator", "Composite", "Proxy"], correctIndex: 1, explanation: "Iterator decouples the traversal algorithms from the collection data structures." },
-    { question: "In MVC architecture, what does the Controller do?", options: ["Renders the UI", "Stores the database credentials", "Acts as an interface between Model and View components to process all the business logic and incoming requests", "Holds the schema of the database"], correctIndex: 2, explanation: "It receives input, manipulates the model, and updates the view." },
-    { question: "What is a God Object (or God Class)?", options: ["A class that controls too much or knows too much, violating the Single Responsibility Principle", "A class representing the database", "The main method", "A perfectly optimized class"], correctIndex: 0, explanation: "It's an anti-pattern where one class becomes a massive dumping ground for logic." },
-    { question: "What is the Adapter pattern used for?", options: ["To adapt to different screen sizes", "To convert the interface of a class into another interface clients expect", "To connect to different databases automatically", "To mock objects in tests"], correctIndex: 1, explanation: "Adapter allows classes with incompatible interfaces to work together." }
+    {
+      question: "You are designing an e-commerce billing engine that supports multiple payment providers (Stripe, PayPal, UPI, NetBanking). The payment processing algorithm must be interchangeable at runtime without modifying the checkout class. Which design pattern should you apply?",
+      options: [
+        "Singleton Pattern, ensuring only one payment transaction occurs per application instance",
+        "Strategy Pattern, defining a `PaymentStrategy` interface with concrete implementations and injecting the selected strategy into the `CheckoutService`",
+        "Decorator Pattern, wrapping each payment method inside nested HTTP filters",
+        "Prototype Pattern, cloning memory buffers of previous payments"
+      ],
+      correctIndex: 1,
+      explanation: "The Strategy Pattern defines a family of algorithms, encapsulates each one inside a separate class, and makes them interchangeable. This adheres directly to the Open/Closed Principle: new payment options can be added without modifying the core checkout service."
+    },
+    {
+      question: "According to the Single Responsibility Principle (SRP) in SOLID software design, how is a 'responsibility' defined?",
+      options: [
+        "A class must never contain more than one function or method",
+        "A class should have only one reason to change, meaning it should only be responsible to a single actor or business stakeholder",
+        "A class should only be accessed by one thread at any given time",
+        "A class must contain zero external dependencies or imports"
+      ],
+      correctIndex: 1,
+      explanation: "As formulated by Robert C. Martin, SRP states that a module or class should be responsible to one, and only one, actor or stakeholder. For example, a class that calculates payroll (accounting) should not also be responsible for formatting PDF reports (presentation) or writing to SQL (persistence)."
+    },
+    {
+      question: "In a document rendering application, you need to add dynamic capabilities (such as encryption, watermark stamping, and compression) to text streams in arbitrary combinations without subclass explosion. Which design pattern solves this?",
+      options: [
+        "Decorator Pattern, wrapping the core stream component in decorator classes that implement the same interface and augment behavior dynamically",
+        "Abstract Factory Pattern, creating separate document classes for every possible permutation",
+        "Flyweight Pattern, sharing character glyphs across text paragraphs",
+        "Adapter Pattern, converting incompatible stream interfaces to socket connections"
+      ],
+      correctIndex: 0,
+      explanation: "The Decorator Pattern attaches additional responsibilities to an object dynamically. Decorators provide a flexible alternative to subclassing for extending functionality, allowing chaining (e.g. `new EncryptedStream(new WatermarkedStream(new FileStream()))`) without creating dozens of combinatorial classes."
+    },
+    {
+      question: "What is the primary architectural hazard of the Observer Pattern in languages with garbage collection (like Java or C#), and how is it prevented?",
+      options: [
+        "Subject notifications cause CPU registers to freeze during loop execution",
+        "The 'Lapsed Listener' problem: registered observers retain strong references from the subject, preventing garbage collection and causing memory leaks; prevented by using Weak References or explicit unsubscribe lifecycles",
+        "Observers cannot process data asynchronously without hardware GPU support",
+        "The subject is forced to convert all notifications into JSON strings"
+      ],
+      correctIndex: 1,
+      explanation: "When an observer registers with a long-lived subject, the subject holds a strong reference to it. If the client discards the observer without calling `unsubscribe()`, the garbage collector cannot reclaim it, leading to silent memory leaks. Using `WeakReference` or explicit unsubscribe hooks resolves this."
+    },
+    {
+      question: "You are implementing a thread-safe Singleton pattern in Java. Why is Double-Checked Locking with a `volatile` keyword required rather than simple synchronized method access?",
+      options: [
+        "Synchronizing the entire `getInstance()` method incurs unnecessary synchronization overhead on every subsequent read after initialization; `volatile` prevents CPU instruction reordering during instance construction",
+        "Simple synchronization causes deadlock on multi-core processors",
+        "The JVM does not support thread synchronization inside static methods",
+        "The `volatile` keyword automatically serializes the instance to disk"
+      ],
+      correctIndex: 0,
+      explanation: "Synchronizing `getInstance()` creates a performance bottleneck because 99.9% of calls only read the already-initialized instance. Double-checked locking checks without locks first. The `volatile` modifier is critical because it prevents compiler/CPU instruction reordering where a partially-constructed object reference is published before fields finish initializing."
+    },
+    {
+      question: "How does the Dependency Inversion Principle (DIP) differ from standard Dependency Injection (DI)?",
+      options: [
+        "DIP is a high-level design principle stating that high-level modules should depend on abstractions rather than low-level details, whereas DI is a concrete creational technique to provide dependencies to objects",
+        "DIP only applies to frontend TypeScript apps while DI only applies to Java Spring",
+        "DI requires manual XML configuration while DIP requires JSON files",
+        "They are completely identical terms with no distinction"
+      ],
+      correctIndex: 0,
+      explanation: "Dependency Inversion is a high-level architectural rule ('Depend on abstractions, not concretions'). Dependency Injection (DI) is a specific design pattern and technique used to fulfill that principle (by passing implementations in via constructors or containers rather than having the class instantiate them directly)."
+    },
+    {
+      question: "When designing an undo/redo manager for a collaborative diagram editor, which design pattern encapsulates all actions (insert shape, delete shape, move shape) as discrete objects with execute and undo methods?",
+      options: [
+        "Command Pattern",
+        "Composite Pattern",
+        "Bridge Pattern",
+        "Facade Pattern"
+      ],
+      correctIndex: 0,
+      explanation: "The Command Pattern encapsulates a request as an object, thereby parameterizing clients with different requests, queue or log requests, and support undoable operations by storing previous state and executing reciprocal undo methods."
+    },
+    {
+      question: "An analytics service needs to traverse complex hierarchical company organizational structures (employees, teams, departments, business units) uniformly to compute total headcount. Which design pattern should be applied?",
+      options: [
+        "Composite Pattern, treating individual leaf nodes (employees) and composite branches (departments containing employees/teams) uniformly through a common component interface",
+        "Flyweight Pattern, sharing employee memory allocations across departments",
+        "Proxy Pattern, restricting access to private organizational records",
+        "Builder Pattern, assembling department objects step-by-step"
+      ],
+      correctIndex: 0,
+      explanation: "The Composite Pattern composes objects into tree structures to represent part-whole hierarchies. Composite lets clients treat individual objects and compositions of objects uniformly, allowing a single recursive `getHeadcount()` call to traverse employees and multi-tier departments identically."
+    }
   ]
 };

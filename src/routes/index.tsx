@@ -170,24 +170,24 @@ function LandingPage() {
 
       {/* Hero Section */}
       <section className="relative pt-16 pb-20 md:pt-24 md:pb-28 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
-        {/* Subtle Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 mb-6 animate-fade-up">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>Built for Indian CS Freshers & Tech Placement Season</span>
+        {/* Engineering Badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-mono font-medium bg-secondary text-foreground border border-border shadow-xs mb-6 animate-fade-up">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Placement Season 2026 · Technical Interview Practice</span>
         </div>
 
-        {/* Hero Title */}
+        {/* Hero Title - Clean, high-contrast, professional */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-foreground leading-[1.15] mb-6">
-          Crack Your Placement Interviews With{" "}
-          <span className="bg-gradient-to-r from-primary via-indigo-500 to-violet-500 bg-clip-text text-transparent">
-            Real-Time AI Mock Sessions
+          Master Your Campus Tech Interviews With{" "}
+          <span className="text-primary underline decoration-primary/40 decoration-4 underline-offset-8">
+            Real-Time Technical Rounds
           </span>
         </h1>
 
         {/* Hero Subtitle */}
         <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
           Practice adaptive conversational voice interviews in DSA, Spring Boot, System Design, and LLD. Get instant
-          multi-metric scorecards and track your placement readiness.
+          multi-metric scorecards and test technical concepts with unlimited quizzes.
         </p>
 
         {/* CTA Group */}
@@ -211,15 +211,15 @@ function LandingPage() {
         <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground pt-4 border-t border-border/60">
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>3 Free full mock sessions included</span>
+            <span>3 Free Full Mock Interviews Included</span>
           </div>
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>Human-like Edge TTS Voice</span>
+            <span>Unlimited Concept &amp; MCQ Quizzes</span>
           </div>
           <div className="flex items-center gap-1.5">
             <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-            <span>No credit card required to start</span>
+            <span>Edge TTS Natural Voice Interactivity</span>
           </div>
         </div>
       </section>

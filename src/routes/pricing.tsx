@@ -217,7 +217,13 @@ function PricingPage() {
                 <div className="flex items-center gap-2.5 text-xs text-foreground">
                   <Check className="w-4 h-4 text-emerald-500 shrink-0" />
                   <span>
-                    <strong>3 Free Sessions</strong> (Interviews or Quizzes)
+                    <strong>3 Free Full Mock Interviews</strong>
+                  </span>
+                </div>
+                <div className="flex items-center gap-2.5 text-xs text-foreground">
+                  <Check className="w-4 h-4 text-emerald-500 shrink-0" />
+                  <span>
+                    <strong>Unlimited Concept &amp; MCQ Quizzes</strong>
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5 text-xs text-foreground">

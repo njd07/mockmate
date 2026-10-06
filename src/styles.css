@@ -38,77 +38,77 @@
   --color-success: var(--success);
 }
 
-/* Light Theme (Default) */
+/* Light Theme (Default: Clean High-Contrast Slate / Tech Blue) */
 :root {
   --radius: 0.75rem;
   color-scheme: light;
   
-  --background: oklch(0.985 0.003 260); /* Minimal subtle off-white/light-gray */
-  --foreground: oklch(0.15 0.02 260);
-  --card: oklch(1 0 0); /* Pure crisp white card */
-  --card-foreground: oklch(0.15 0.02 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 260);
+  --background: #f8fafc;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
   
-  --primary: oklch(0.52 0.22 262); /* Rich Indigo */
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: #2563eb; /* Clean Technical Blue */
+  --primary-foreground: #ffffff;
   
-  --secondary: oklch(0.94 0.01 260);
-  --secondary-foreground: oklch(0.2 0.02 260);
-  --muted: oklch(0.95 0.005 260);
-  --muted-foreground: oklch(0.48 0.02 260);
+  --secondary: #f1f5f9;
+  --secondary-foreground: #1e293b;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
   
-  --accent: oklch(0.94 0.015 260);
-  --accent-foreground: oklch(0.2 0.02 260);
+  --accent: #f8fafc;
+  --accent-foreground: #0f172a;
   
-  --destructive: oklch(0.58 0.22 25);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
   
-  --border: oklch(0.90 0.005 260);
-  --input: oklch(0.92 0.005 260);
-  --ring: oklch(0.52 0.22 262);
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #2563eb;
   
-  --cyan: oklch(0.55 0.18 240);
-  --violet: oklch(0.54 0.22 290);
-  --success: oklch(0.62 0.18 150);
+  --cyan: #0284c7;
+  --violet: #4f46e5;
+  --success: #10b981;
 
-  --grid-line: rgba(15, 23, 42, 0.08);
+  --grid-line: rgba(15, 23, 42, 0.085);
 }
 
-/* Dark Theme */
+/* Dark Theme (Deep Obsidian / Technical Navy) */
 .dark {
   color-scheme: dark;
   
-  --background: oklch(0.12 0.015 260); /* Deep sleek obsidian */
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.16 0.015 260);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.16 0.015 260);
-  --popover-foreground: oklch(0.98 0 0);
+  --background: #090d16;
+  --foreground: #f8fafc;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
   
-  --primary: oklch(0.65 0.2 260); /* Vibrant Indigo */
-  --primary-foreground: oklch(0.99 0 0);
+  --primary: #3b82f6; /* Vibrant Tech Blue */
+  --primary-foreground: #ffffff;
   
-  --secondary: oklch(0.22 0.015 260);
-  --secondary-foreground: oklch(0.92 0 0);
-  --muted: oklch(0.22 0.015 260);
-  --muted-foreground: oklch(0.65 0.02 260);
+  --secondary: #1e293b;
+  --secondary-foreground: #f1f5f9;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
   
-  --accent: oklch(0.24 0.02 260);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: #1e293b;
+  --accent-foreground: #f8fafc;
   
-  --destructive: oklch(0.6 0.2 25);
-  --destructive-foreground: oklch(0.99 0 0);
+  --destructive: #f87171;
+  --destructive-foreground: #090d16;
   
-  --border: oklch(0.24 0.015 260);
-  --input: oklch(0.22 0.015 260);
-  --ring: oklch(0.65 0.2 260);
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.12);
+  --ring: #3b82f6;
   
-  --cyan: oklch(0.68 0.16 230);
-  --violet: oklch(0.66 0.2 290);
-  --success: oklch(0.7 0.16 150);
+  --cyan: #38bdf8;
+  --violet: #818cf8;
+  --success: #34d47f;
 
-  --grid-line: rgba(255, 255, 255, 0.07);
+  --grid-line: rgba(255, 255, 255, 0.08);
 }
 
 html, body {
@@ -125,39 +125,47 @@ body {
 
 .font-mono { font-family: var(--font-mono); }
 
-/* Premium SaaS Cards */
+/* Technical SaaS Cards with subtle translucency so the grid is visible behind them */
 .glass {
-  background: var(--card);
+  background: color-mix(in srgb, var(--card) 85%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.05);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.04), 0 1px 2px -1px rgb(0 0 0 / 0.04);
   border-radius: var(--radius);
 }
 
 .dark .glass {
-  background: var(--card);
+  background: color-mix(in srgb, var(--card) 80%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 12px 0 rgb(0 0 0 / 0.35);
+  box-shadow: 0 4px 16px 0 rgb(0 0 0 / 0.4);
 }
 
 .glass-strong {
-  background: var(--card);
+  background: color-mix(in srgb, var(--card) 92%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.07);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
   border-radius: var(--radius);
 }
 
 .dark .glass-strong {
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
   box-shadow: 0 8px 24px -4px rgb(0 0 0 / 0.5);
 }
 
-/* Subtle, barely-noticeable grid pattern — thin lines, wide spacing, full-page coverage */
+/* Sharp, prominent engineering grid pattern — visible across all screens */
 .grid-bg {
   background-image:
-    linear-gradient(var(--grid-line) 1px, transparent 1px),
-    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
-  background-size: 72px 72px;
-  mask-image: radial-gradient(ellipse 140% 120% at 50% 40%, black 60%, transparent 100%);
-  -webkit-mask-image: radial-gradient(ellipse 140% 120% at 50% 40%, black 60%, transparent 100%);
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
 .glow-cyan { border-left: 3px solid var(--cyan); }

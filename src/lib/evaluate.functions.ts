@@ -86,32 +86,31 @@ const NextQInput = z.object({
 });
 
 export const nextInterviewerTurn = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => NextQInput.parse(d))
+  .validator((d: unknown) => NextQInput.parse(d))
   .handler(async ({ data }) => {
     const fullKb = knowledgeBase[data.domain as Domain];
     const topics = getTopicsOnly(fullKb);
 
-    // For the first question: pick a random subset of questions for this session
-    // For subsequent questions: use a smaller context to be faster
+    // Pick a diverse set of reference topics/questions
     const randomQuestions = data.questionIndex === 0
       ? getRandomQuestionSubset(fullKb, 8)
       : getRandomQuestionSubset(fullKb, 5);
 
-    const kbContext = `${topics}\n\n## Sample Questions for Reference:\n${randomQuestions}`;
-
-    // Generate a random seed so the LLM doesn't repeat patterns
+    const kbContext = `${topics}\n\n## Reference Technical Domain Concepts:\n${randomQuestions}`;
     const randomSeed = Math.floor(Math.random() * 1000);
 
-    const persona = `You are a senior technical interviewer conducting a focused interview. Be conversational but rigorous.
-RULES:
-- Ask ONE question at a time, concise (1-2 sentences max).
-- If the candidate just answered, briefly acknowledge (1 short sentence max), then ask the NEXT question.
-- IMPORTANT: Pick a DIFFERENT question each turn. Use the reference questions as inspiration. Random seed: ${randomSeed}.
-- CRITICAL: NEVER provide the answer to your own question! The reference context below contains both Questions and Answers. You must ONLY output the Question. Do NOT output the Answer. Let the candidate answer!
-- Vary difficulty across the session. This is question #${data.questionIndex + 1} of 5.
-- Do NOT repeat any question already asked in the conversation history.
-- After question #5, instead of asking, summarize: "That's the end of our session. Great work."
-- Keep your responses SHORT — no more than 3 sentences total.`;
+    const persona = `You are a Principal Engineering Interviewer at a premier technology company (such as Microsoft, Amazon, or a top fintech engineering group). You are evaluating a technical candidate.
+
+ROUND GUIDELINES:
+- Every question must be in-depth, scenario-grounded, and conceptual.
+- NEVER ask superficial definitions or questions that can be answered with a single word or short phrase.
+- Challenge the candidate to explain real-world architectural design, trade-offs (space vs time, latency vs consistency, concurrency vs thread safety), internal mechanics of data structures/frameworks, and production edge cases.
+- If the candidate answered a previous question: provide a professional 1-sentence assessment of their response (acknowledging sound logic or noting missed nuances), then transition directly into your next question.
+- CRITICAL: Never reveal the answer or hint away the solution. Let the candidate lead the reasoning.
+- DO NOT USE ANY MARKDOWN FORMATTING (no asterisks **, no hashtags #, no backticks \`, no bullet symbols). Write clean, natural conversational spoken English paragraphs so that voice synthesis speaks clearly and authentically.
+- This is question #${data.questionIndex + 1} of 5. Calibrate depth appropriately.
+- Do NOT repeat questions already asked in the transcript.
+- If questionIndex is 5 (after 5 full questions), conclude gracefully: "Thank you for walking me through your technical approach across each round. That brings us to the end of our technical interview. Let's look at your detailed performance scorecard."`;
 
     const messages = [
       { role: "system" as const, content: `${persona}\n\nKNOWLEDGE BASE:\n${kbContext}` },
@@ -163,7 +162,7 @@ export type Evaluation = {
 };
 
 export const evaluateInterview = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => EvalInput.parse(d))
+  .validator((d: unknown) => EvalInput.parse(d))
   .handler(async ({ data }) => {
     const transcriptText = data.transcript
       .map((t) => `${t.role.toUpperCase()}: ${t.content}`)

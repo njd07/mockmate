@@ -7,7 +7,7 @@ import { GlassCard } from "@/components/GlassCard";
 import { GlowButton } from "@/components/GlowButton";
 import { DOMAIN_META, type Domain } from "@/lib/knowledge";
 import { nextInterviewerTurn } from "@/lib/evaluate.functions";
-import { synthesizeSpeech } from "@/lib/tts.functions";
+import { synthesizeSpeech, cleanTextForSpeech } from "@/lib/tts.functions";
 import { completeSession } from "@/lib/user.functions";
 
 export const Route = createFileRoute("/interview/$domain")({
@@ -41,6 +41,7 @@ function InterviewPage() {
   const recognitionRef = useRef<any>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const startedRef = useRef(false);
+  const activeUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [transcript, thinking]);
 
@@ -56,13 +57,29 @@ function InterviewPage() {
     if (muted) return;
     setSpeaking(true);
     // Always cancel any queued browser TTS first
-    window.speechSynthesis?.cancel();
+    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
 
-    // ── Edge TTS via server function ────────────────────────────
+    const cleanText = cleanTextForSpeech(text);
+    if (!cleanText) {
+      setSpeaking(false);
+      return;
+    }
+
+    // ── 1. Edge TTS via server function (with 4.5s client timeout race) ──
+    let edgeSuccess = false;
     try {
-      const result = await ttsFn({ data: { text, voiceId: settings.voiceId } });
-      if (result.ok) {
-        const audioData = Uint8Array.from(atob(result.audioBase64), c => c.charCodeAt(0));
+      const serverTtsPromise = ttsFn({ data: { text: cleanText, voiceId: settings.voiceId } });
+      const timeoutPromise = new Promise<{ ok: false; error: string }>((resolve) =>
+        setTimeout(() => resolve({ ok: false, error: "CLIENT_TIMEOUT" }), 4500)
+      );
+
+      const result = await Promise.race([serverTtsPromise, timeoutPromise]);
+      if (result && result.ok) {
+        const audioData = Uint8Array.from(atob(result.audioBase64), (c) => c.charCodeAt(0));
         const blob = new Blob([audioData], { type: "audio/mp3" });
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
@@ -71,37 +88,68 @@ function InterviewPage() {
         audio.onerror = () => { setSpeaking(false); URL.revokeObjectURL(url); };
         try {
           await audio.play();
-          return; // Success — Edge TTS audio is playing
+          edgeSuccess = true;
+          return; // Playing successfully via Edge TTS!
         } catch {
           URL.revokeObjectURL(url);
         }
-      } else {
-        console.warn("[TTS] Edge TTS failed:", result.error);
       }
     } catch (e) {
-      console.error("[TTS] Edge TTS error:", e);
+      console.warn("[TTS] Edge TTS error, falling back to browser speech:", e);
     }
 
-    // ── Fallback: browser TTS ───────────────────────────────────
-    fallbackTTS(text);
+    // ── 2. Fallback: Browser SpeechSynthesis with high-quality natural voice ──
+    if (!edgeSuccess) {
+      fallbackTTS(cleanText);
+    }
   }
 
   function fallbackTTS(text: string) {
-    if (!window.speechSynthesis) {
+    if (typeof window === "undefined" || !window.speechSynthesis) {
       setSpeaking(false);
       return;
     }
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
-    utterance.onend = () => setSpeaking(false);
-    utterance.onerror = () => setSpeaking(false);
-    window.speechSynthesis.speak(utterance);
+
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      activeUtteranceRef.current = utterance;
+
+      // Select highest quality natural voice if available
+      const voices = window.speechSynthesis.getVoices();
+      const naturalVoice =
+        voices.find((v) => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Online") || v.name.includes("Google"))) ||
+        voices.find((v) => v.lang.startsWith("en")) ||
+        null;
+
+      if (naturalVoice) utterance.voice = naturalVoice;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      utterance.onend = () => {
+        setSpeaking(false);
+        activeUtteranceRef.current = null;
+      };
+      utterance.onerror = () => {
+        setSpeaking(false);
+        activeUtteranceRef.current = null;
+      };
+
+      window.speechSynthesis.speak(utterance);
+    } catch {
+      setSpeaking(false);
+    }
   }
 
   function stopSpeaking() {
-    audioRef.current?.pause();
-    audioRef.current = null;
-    if (window.speechSynthesis) window.speechSynthesis.cancel();
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      activeUtteranceRef.current = null;
+    }
     setSpeaking(false);
   }
 
@@ -246,20 +294,34 @@ function InterviewPage() {
         <div className="flex-1 overflow-auto space-y-3 pb-4">
           {transcript.map((t, i) => (
             <div key={i} className={`flex ${t.role === "candidate" ? "justify-end" : "justify-start"} animate-fade-up`}>
-              <div className={`max-w-[85%] p-4 rounded-2xl font-mono text-sm ${
+              <div className={`max-w-[85%] p-4 rounded-2xl text-sm leading-relaxed ${
                 t.role === "interviewer"
-                  ? "glass border-l-2 border-[var(--cyan)]"
-                  : "bg-[color-mix(in_oklch,var(--violet)_18%,transparent)] border border-[color-mix(in_oklch,var(--violet)_40%,transparent)]"
+                  ? "glass border-l-4 border-primary"
+                  : "bg-primary text-primary-foreground font-medium"
               }`}>
-                <div className="text-[10px] uppercase tracking-wider mb-1 opacity-60">
-                  {t.role === "interviewer" ? "interviewer" : "you"}
-                  {t.role === "interviewer" && speaking && i === transcript.length - 1 && (
-                    <span className="ml-2 inline-flex gap-0.5 items-end">
-                      {[0,1,2,3].map((b) => (
-                        <span key={b} className="w-0.5 bg-[var(--cyan)] inline-block"
-                          style={{ height: 10, animation: `waveform 0.${5+b}s ease-in-out infinite`, animationDelay: `${b*0.1}s`, transformOrigin: "bottom" }} />
-                      ))}
-                    </span>
+                <div className={`flex items-center justify-between text-[11px] font-semibold uppercase tracking-wider mb-2 ${
+                  t.role === "interviewer" ? "text-muted-foreground" : "text-primary-foreground/80"
+                }`}>
+                  <span className="flex items-center gap-1.5">
+                    {t.role === "interviewer" ? "AI Interviewer" : "You"}
+                    {t.role === "interviewer" && speaking && i === transcript.length - 1 && (
+                      <span className="inline-flex gap-0.5 items-end ml-1">
+                        {[0,1,2,3].map((b) => (
+                          <span key={b} className="w-1 bg-primary inline-block rounded-full"
+                            style={{ height: 10, animation: `waveform 0.${5+b}s ease-in-out infinite`, animationDelay: `${b*0.1}s`, transformOrigin: "bottom" }} />
+                        ))}
+                      </span>
+                    )}
+                  </span>
+                  {t.role === "interviewer" && (
+                    <button
+                      type="button"
+                      onClick={() => speak(t.content)}
+                      className="inline-flex items-center gap-1 text-[11px] font-medium text-primary hover:underline cursor-pointer transition-opacity"
+                      title="Replay Voice Question"
+                    >
+                      <Volume2 className="w-3 h-3" /> Replay
+                    </button>
                   )}
                 </div>
                 <div className="whitespace-pre-wrap">{t.content}</div>

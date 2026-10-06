@@ -177,75 +177,78 @@ function QuizPage() {
       <Link to="/domain/$domain" params={{ domain: d }} className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground hover:text-[var(--cyan)] mb-6">
         <ArrowLeft className="h-4 w-4" /> exit
       </Link>
-      <div className="max-w-2xl mx-auto">
-        <div className="font-mono text-xs text-muted-foreground mb-2 flex justify-between">
-          <span>// {meta.title} quiz</span>
-          <span>Q{i + 1}/{questions?.length || 5}</span>
+      <div className="max-w-3xl mx-auto">
+        <div className="font-mono text-xs text-muted-foreground mb-3 flex justify-between items-center">
+          <span className="uppercase tracking-wider font-semibold text-primary">{meta.title} Diagnostic Quiz</span>
+          <span className="px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">Question {i + 1} of {questions?.length || 5}</span>
         </div>
 
         {!questions && !error && (
-          <GlassCard className="text-center py-12 animate-fade-up">
-            <Loader2 className="h-8 w-8 mx-auto animate-spin text-[var(--cyan)] mb-3" />
-            <p className="font-mono text-sm text-muted-foreground cursor-blink">generating questions</p>
+          <GlassCard className="text-center py-16 animate-fade-up">
+            <Loader2 className="h-8 w-8 mx-auto animate-spin text-primary mb-3" />
+            <p className="text-sm font-medium text-muted-foreground">Generating technical scenario questions...</p>
           </GlassCard>
         )}
 
         {error && (
-          <GlassCard className="border-destructive/40">
-            <p className="font-mono text-sm text-destructive">{error}</p>
-            <Link to="/domain/$domain" params={{ domain: d }}><GlowButton className="mt-4">Back</GlowButton></Link>
+          <GlassCard className="border-destructive/40 p-6">
+            <p className="text-sm text-destructive">{error}</p>
+            <Link to="/domain/$domain" params={{ domain: d }}><GlowButton className="mt-4">Back to Track</GlowButton></Link>
           </GlassCard>
         )}
 
         {questions && (
-          <GlassCard className="animate-fade-up" key={i}>
-            <h2 className="font-mono text-lg font-semibold mb-4">{questions[i].question}</h2>
+          <GlassCard className="animate-fade-up p-6 sm:p-8" key={i}>
+            <h2 className="text-base sm:text-lg font-bold text-foreground leading-relaxed mb-5">{questions[i].question}</h2>
 
-            <div className="flex gap-1 mb-4 p-1 bg-input rounded-md w-fit">
+            <div className="flex gap-1 mb-6 p-1 bg-secondary rounded-lg w-fit border border-border">
               {(["mcq", "free"] as const).map((m) => (
                 <button key={m} onClick={() => { if (!revealed) setMode(m); }} disabled={revealed}
-                  className={`px-3 py-1 font-mono text-[10px] uppercase tracking-wider rounded ${
-                    mode === m ? "bg-[var(--cyan)] text-background" : "text-muted-foreground"
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+                    mode === m ? "bg-card text-foreground shadow-xs border border-border" : "text-muted-foreground hover:text-foreground"
                   }`}>{m === "mcq" ? "Multiple Choice" : "Write Your Own"}</button>
               ))}
             </div>
 
             {mode === "mcq" ? (
-              <div className="space-y-2">
+              <div className="space-y-3">
                 {questions[i].options.map((opt, oi) => {
                   const isCorrect = revealed && oi === questions[i].correctIndex;
                   const isWrong = revealed && picked === oi && oi !== questions[i].correctIndex;
                   return (
                     <button key={oi} onClick={() => !revealed && setPicked(oi)} disabled={revealed}
-                      className={`w-full text-left p-3 rounded-md border font-mono text-sm transition-all ${
-                        isCorrect ? "border-[var(--success)] bg-[color-mix(in_oklch,var(--success)_15%,transparent)]"
-                          : isWrong ? "border-destructive bg-destructive/15"
-                          : picked === oi ? "border-[var(--cyan)] bg-[color-mix(in_oklch,var(--cyan)_12%,transparent)]"
-                          : "border-border hover:border-[var(--cyan)]/60"
+                      className={`w-full text-left p-4 rounded-xl border text-sm leading-relaxed transition-all cursor-pointer flex items-start gap-3 ${
+                        isCorrect ? "border-emerald-500 bg-emerald-500/15 text-foreground font-medium shadow-xs"
+                          : isWrong ? "border-destructive bg-destructive/15 text-foreground"
+                          : picked === oi ? "border-primary bg-primary/10 text-foreground ring-1 ring-primary shadow-xs"
+                          : "border-border bg-card/50 hover:border-primary/50 hover:bg-card"
                       }`}>
-                      <span className="text-muted-foreground mr-2">[{String.fromCharCode(65 + oi)}]</span>{opt}
+                      <span className={`px-2 py-0.5 rounded text-xs font-mono font-bold shrink-0 mt-0.5 ${
+                        picked === oi ? "bg-primary text-primary-foreground" : "bg-secondary text-muted-foreground"
+                      }`}>{String.fromCharCode(65 + oi)}</span>
+                      <span className="flex-1">{opt}</span>
                     </button>
                   );
                 })}
               </div>
             ) : (
-              <textarea value={free} onChange={(e) => setFree(e.target.value)} disabled={revealed} rows={5}
-                placeholder="Write your answer here. AI will judge it against the rubric."
-                className="w-full p-3 bg-input rounded-md font-mono text-sm border border-border focus:outline-none focus:border-[var(--cyan)] resize-none" />
+              <textarea value={free} onChange={(e) => setFree(e.target.value)} disabled={revealed} rows={6}
+                placeholder="Write your comprehensive technical answer explaining the tradeoffs and mechanisms..."
+                className="w-full p-4 bg-card rounded-xl text-sm border border-border focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary resize-none leading-relaxed" />
             )}
 
             {revealed && (
-              <div className="mt-4 p-4 rounded-md glass border-l-2 border-[var(--cyan)] animate-fade-up">
-                <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--cyan)] mb-1 flex items-center gap-1">
-                  <Sparkles className="h-3 w-3" /> {mode === "free" && currentJudge ? `${currentJudge.verdict} · ${currentJudge.score}/10` : "explanation"}
+              <div className="mt-6 p-4 rounded-xl glass border-l-4 border-primary animate-fade-up">
+                <div className="text-xs font-bold uppercase tracking-wider text-primary mb-1.5 flex items-center gap-1.5">
+                  <Sparkles className="h-3.5 w-3.5" /> {mode === "free" && currentJudge ? `${currentJudge.verdict.toUpperCase()} · Score: ${currentJudge.score}/10` : "Technical Explanation & Rubric"}
                 </div>
-                <div className="text-sm">
+                <div className="text-sm text-foreground leading-relaxed">
                   {mode === "free" && currentJudge ? currentJudge.feedback : questions[i].explanation}
                 </div>
               </div>
             )}
 
-            <div className="mt-5 flex justify-end gap-2">
+            <div className="mt-6 flex justify-end gap-3 pt-4 border-t border-border/60">
               {!revealed ? (
                 <GlowButton onClick={submit} disabled={judging || (mode === "mcq" ? picked === null : !free.trim())}>
                   {judging ? <Loader2 className="h-4 w-4 animate-spin" /> : "Submit"}
