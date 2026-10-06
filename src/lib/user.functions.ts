@@ -104,25 +104,49 @@ export const createCheckoutSession = createServerFn({ method: "POST" })
               },
             ];
 
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ["card"],
-          mode: "subscription",
-          client_reference_id: data.userId,
-          customer_email: data.email,
-          line_items: lineItems,
-          metadata: {
-            userId: data.userId,
-            clerk_user_id: data.userId,
-          },
-          subscription_data: {
+        // Allow dynamic payment methods configured in Stripe Dashboard (UPI, Card, Google Pay, etc.)
+        let session: Stripe.Checkout.Session;
+        try {
+          session = await stripe.checkout.sessions.create({
+            mode: "subscription",
+            client_reference_id: data.userId,
+            customer_email: data.email,
+            line_items: lineItems,
             metadata: {
               userId: data.userId,
               clerk_user_id: data.userId,
             },
-          },
-          success_url: `${returnUrl}/pricing?status=success&session_id={CHECKOUT_SESSION_ID}&userId=${encodeURIComponent(data.userId)}`,
-          cancel_url: `${returnUrl}/pricing?status=cancelled`,
-        });
+            subscription_data: {
+              metadata: {
+                userId: data.userId,
+                clerk_user_id: data.userId,
+              },
+            },
+            success_url: `${returnUrl}/pricing?status=success&session_id={CHECKOUT_SESSION_ID}&userId=${encodeURIComponent(data.userId)}`,
+            cancel_url: `${returnUrl}/pricing?status=cancelled`,
+          });
+        } catch (dynamicErr) {
+          console.warn("[Stripe] Dynamic payment methods creation fallback to card:", dynamicErr);
+          session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            mode: "subscription",
+            client_reference_id: data.userId,
+            customer_email: data.email,
+            line_items: lineItems,
+            metadata: {
+              userId: data.userId,
+              clerk_user_id: data.userId,
+            },
+            subscription_data: {
+              metadata: {
+                userId: data.userId,
+                clerk_user_id: data.userId,
+              },
+            },
+            success_url: `${returnUrl}/pricing?status=success&session_id={CHECKOUT_SESSION_ID}&userId=${encodeURIComponent(data.userId)}`,
+            cancel_url: `${returnUrl}/pricing?status=cancelled`,
+          });
+        }
 
         return { ok: true as const, checkoutUrl: session.url, mode: "stripe" as const };
       } catch (err: any) {
