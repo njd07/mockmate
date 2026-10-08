@@ -18,7 +18,7 @@ export const Route = createFileRoute("/interview/$domain")({
 type Turn = { role: "interviewer" | "candidate"; content: string };
 
 function InterviewPage() {
-  const { user, loading, settings, setSettings, refreshProfile } = useSession();
+  const { user, loading, isPro, settings, setSettings, refreshProfile, consumeSession } = useSession();
   const { domain } = Route.useParams();
   const d = domain as Domain;
   const navigate = useNavigate();
@@ -69,12 +69,12 @@ function InterviewPage() {
       return;
     }
 
-    // ── 1. Edge TTS via server function (with 4.5s client timeout race) ──
+    // ── 1. Edge TTS via server function (with 10s client timeout race) ──
     let edgeSuccess = false;
     try {
       const serverTtsPromise = ttsFn({ data: { text: cleanText, voiceId: settings.voiceId } });
       const timeoutPromise = new Promise<{ ok: false; error: string }>((resolve) =>
-        setTimeout(() => resolve({ ok: false, error: "CLIENT_TIMEOUT" }), 4500)
+        setTimeout(() => resolve({ ok: false, error: "CLIENT_TIMEOUT" }), 10000)
       );
 
       const result = await Promise.race([serverTtsPromise, timeoutPromise]);
@@ -118,12 +118,13 @@ function InterviewPage() {
       // Select highest quality natural voice if available
       const voices = window.speechSynthesis.getVoices();
       const naturalVoice =
-        voices.find((v) => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Online") || v.name.includes("Google"))) ||
+        voices.find((v) => v.lang.startsWith("en") && (v.name.includes("Natural") || v.name.includes("Online") || v.name.includes("Neural") || v.name.includes("Google") || v.name.includes("Guy") || v.name.includes("Christopher"))) ||
+        voices.find((v) => v.lang.startsWith("en") && !v.name.includes("Zira") && !v.name.includes("David")) ||
         voices.find((v) => v.lang.startsWith("en")) ||
         null;
 
       if (naturalVoice) utterance.voice = naturalVoice;
-      utterance.rate = 1.0;
+      utterance.rate = 0.98;
       utterance.pitch = 1.0;
 
       utterance.onend = () => {
@@ -230,17 +231,21 @@ function InterviewPage() {
     setListening(true);
   }
 
-  function finish() {
+  async function finish() {
     if (user?.id) {
-      completeSession({
-        data: {
-          userId: user.id,
-          domain: d,
-          sessionType: "interview",
-          score: { questionsAnswered: questionIndex, transcriptTurns: transcript.length },
-        },
-      }).catch(console.error);
-      refreshProfile().catch(console.error);
+      try {
+        await completeSession({
+          data: {
+            userId: user.id,
+            domain: d,
+            sessionType: "interview",
+            score: { questionsAnswered: questionIndex, transcriptTurns: transcript.length },
+          },
+        });
+        await refreshProfile();
+      } catch (err) {
+        console.warn("Could not save session completion:", err);
+      }
     }
     navigate({ to: "/evaluation", search: { domain: d } as any, state: { transcript } as any });
   }
@@ -260,6 +265,9 @@ function InterviewPage() {
           <GlowButton className="w-full text-lg py-4" onClick={async () => {
             // Unlock AudioContext in Chrome — must happen inside a click handler
             try { const ctx = new AudioContext(); await ctx.resume(); ctx.close(); } catch {}
+            if (!isPro) {
+              await consumeSession(d);
+            }
             setStarted(true);
           }}>
             Begin Interview

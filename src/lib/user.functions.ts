@@ -4,6 +4,7 @@ import Stripe from "stripe";
 import {
   getOrCreateUserProfile,
   recordCompletedSession,
+  consumeOneInterviewSession,
   setUserPlan,
   adjustUserCredits,
   getUserSessionHistory,
@@ -58,6 +59,18 @@ export const getUserStatus = createServerFn({ method: "POST" })
       canStartSession,
       freeLimit,
     };
+  });
+
+const StartSessionInput = z.object({
+  userId: z.string(),
+  domain: z.string(),
+});
+
+export const startInterviewSession = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => StartSessionInput.parse(d))
+  .handler(async ({ data }) => {
+    const updated = await consumeOneInterviewSession(data.userId, data.domain);
+    return { ok: true as const, profile: updated };
   });
 
 export const completeSession = createServerFn({ method: "POST" })

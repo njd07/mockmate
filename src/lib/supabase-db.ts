@@ -228,13 +228,59 @@ export async function getOrCreateUserProfile(
   return profile;
 }
 
+export async function consumeOneInterviewSession(
+  userId: string,
+  domain: string
+): Promise<UserProfile> {
+  const client = getSupabaseAdminClient();
+  if (client) {
+    try {
+      const { data: rawProfile } = await client
+        .from("user_profiles")
+        .select("*")
+        .eq("clerk_user_id", userId)
+        .single();
+
+      if (rawProfile) {
+        const profile = await checkAndApplyMonthlyReset(client, rawProfile as UserProfile);
+        const nextUsed = (profile.free_sessions_used || 0) + 1;
+        const nextCredits = Math.max(0, (profile.credits ?? 5) - 1);
+
+        const { data: updated } = await client
+          .from("user_profiles")
+          .update({
+            free_sessions_used: nextUsed,
+            credits: nextCredits,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("clerk_user_id", userId)
+          .select()
+          .single();
+
+        if (updated) return updated as UserProfile;
+      }
+    } catch (e) {
+      console.warn("[DB:Supabase] consumeOneInterviewSession failed, using memory store:", e);
+    }
+  }
+
+  // Memory fallback
+  const profile = await getOrCreateUserProfile(userId);
+  profile.free_sessions_used += 1;
+  profile.credits = Math.max(0, profile.credits - 1);
+  profile.updated_at = new Date().toISOString();
+  memoryStore.profiles.set(userId, profile);
+  return profile;
+}
+
 export async function recordCompletedSession(
   userId: string,
   domain: string,
   sessionType: "interview" | "quiz",
   score?: Record<string, unknown>,
   feedback?: Record<string, unknown> | Array<unknown>,
-  durationSeconds: number = 0
+  durationSeconds: number = 0,
+  shouldConsumeCredit: boolean = false
 ): Promise<UserProfile> {
   const client = getSupabaseAdminClient();
   const sessionEntry: SessionRecord = {
@@ -261,10 +307,13 @@ export async function recordCompletedSession(
 
       if (rawProfile) {
         const profile = await checkAndApplyMonthlyReset(client, rawProfile as UserProfile);
-        // Only count against free sessions / credits for real mock interviews, NOT for MCQ quizzes
         const isInterview = sessionType === "interview";
-        const nextUsed = isInterview ? (profile.free_sessions_used || 0) + 1 : (profile.free_sessions_used || 0);
-        const nextCredits = isInterview ? Math.max(0, (profile.credits || 5) - 1) : (profile.credits ?? 5);
+        const nextUsed = (isInterview && shouldConsumeCredit)
+          ? (profile.free_sessions_used || 0) + 1
+          : (profile.free_sessions_used || 0);
+        const nextCredits = (isInterview && shouldConsumeCredit)
+          ? Math.max(0, (profile.credits || 5) - 1)
+          : (profile.credits ?? 5);
 
         const { data: updated } = await client
           .from("user_profiles")
@@ -287,7 +336,7 @@ export async function recordCompletedSession(
   // Memory fallback
   memoryStore.sessions.push(sessionEntry);
   const profile = await getOrCreateUserProfile(userId);
-  if (sessionType === "interview") {
+  if (sessionType === "interview" && shouldConsumeCredit) {
     profile.free_sessions_used += 1;
     profile.credits = Math.max(0, profile.credits - 1);
   }

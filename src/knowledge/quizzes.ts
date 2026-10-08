@@ -10,114 +10,224 @@ export type QuizQuestion = {
 export const QUIZ_BANK: Record<Domain, QuizQuestion[]> = {
   dsa: [
     {
-      question: "You are designing an in-memory LRU (Least Recently Used) cache for high-throughput API responses. The system must support O(1) lookups and O(1) eviction of the oldest entry upon capacity overflow. Which architectural data structure combination best guarantees these requirements?",
+      question: "You are given an unsorted array of N integers containing both positive and negative values. You need to determine the maximum sum of any contiguous subarray in O(N) time and O(1) auxiliary space. Which algorithm or technique should you use?",
       options: [
-        "A standard dynamic array paired with binary search, sorting elements whenever an item is accessed",
-        "A Hash Map paired with a Doubly Linked List, where the map enables O(1) node lookup and the list enables O(1) node removal and re-insertion at the head",
-        "A Min-Heap prioritized by access timestamp combined with a Singly Linked List",
-        "A Balanced Binary Search Tree (Red-Black tree) indexing nodes by monotonic insertion sequence"
+        "Kadane's Algorithm",
+        "Floyd-Warshall Algorithm",
+        "Divide-and-Conquer Strassen's Algorithm",
+        "Sieve of Eratosthenes"
       ],
-      correctIndex: 1,
-      explanation: "A Hash Map provides O(1) key-to-node pointer lookup. A Doubly Linked List allows detaching any node in O(1) time without traversing, and moving it to the head as most recently used or evicting from the tail in O(1)."
+      correctIndex: 0,
+      explanation: "Kadane's Algorithm maintains a running sum of the maximum subarray ending at the current position (curr = max(x, curr + x)), updating the global maximum in linear O(N) time and O(1) auxiliary space."
     },
     {
-      question: "In a financial exchange order-matching engine, price levels are searched and updated millions of times per second. Why is a balanced Binary Search Tree (such as Red-Black or AVL) preferred over an unaugmented Hash Table for order-book price depth queries?",
+      question: "You are given an array of N integers that is already sorted in ascending order and a target value T. You must determine whether any two numbers add up to T in O(N) time while strictly using O(1) auxiliary space. Which algorithmic technique is optimal?",
       options: [
-        "Hash tables cannot store numeric keys or price values accurately due to 64-bit floating point limitations",
-        "Balanced BSTs support range queries, finding the nearest ceiling/floor price, and ordered min/max retrievals in O(log n) time, which hash tables cannot do in O(1)",
-        "Balanced BSTs provide O(1) amortized insertion whereas Hash Tables require O(n^2) worst-case collision chaining",
-        "Hash tables require full rehashing on every insert which blocks lock-free concurrency"
+        "Hash Map storing seen complements",
+        "Two Pointers placed at opposite ends (left and right), moving inward based on whether the current sum is less than or greater than T",
+        "Breadth-First Search on a state transition graph",
+        "Dynamic programming with an N × T table"
       ],
       correctIndex: 1,
-      explanation: "While Hash Tables provide O(1) average exact lookups, they are inherently unordered. Order matching requires finding best bids/asks, floor/ceiling prices, and iterating over price intervals in sorted order, which balanced BSTs achieve in O(log n) time."
+      explanation: "Because the array is already sorted, converging Two Pointers from both ends runs in O(N) time and requires strictly O(1) auxiliary space. A Hash Map also takes O(N) time but incurs O(N) extra memory."
     },
     {
-      question: "You are implementing a build dependency resolver for a monorepo containing thousands of interconnected packages. Which algorithm detects circular dependencies and produces a valid compilation sequence?",
+      question: "What is the tight worst-case time complexity of the optimal Two-Pointer approach to solve the 3Sum problem (finding all unique triplets [a, b, c] such that a + b + c = 0 in an unsorted array of N elements)?",
       options: [
-        "Kruskal's Algorithm using Disjoint Set Union to build a minimum spanning tree",
-        "Topological Sort using Kahn's algorithm (in-degree tracking) or Depth First Search with 3-color node state tracking (unvisited, visiting, visited)",
-        "Floyd-Warshall all-pairs shortest path matrix relaxation",
-        "Dijkstra's single-source shortest path algorithm using a Fibonacci heap"
+        "O(N log N)",
+        "O(N³)",
+        "O(N²)",
+        "O(N)"
       ],
-      correctIndex: 1,
-      explanation: "Dependency graphs are Directed Acyclic Graphs (DAGs). Topological sort computes an execution order where all dependencies precede dependents. A cycle is detected if a back-edge is encountered during DFS (encountering a node currently in the 'visiting' recursion stack) or if in-degrees do not reach zero in Kahn's algorithm."
+      correctIndex: 2,
+      explanation: "Sorting the array takes O(N log N). Iterating through each index and running a two-pointer search on the remainder takes O(N) per index, yielding O(N log N + N²) = O(N²) total time."
     },
     {
-      question: "During a code review, an engineer notes that a standard QuickSort implementation degrades to O(n²) time complexity on production payloads. What scenario triggers this worst-case performance, and how is it mitigated?",
+      question: "Given a string of length N and an integer K, you must find the length of the longest substring containing at most K distinct characters in optimal O(N) time. Which technique should you use?",
       options: [
-        "The input array contains strictly unique random values; mitigated by switching to Bubble Sort",
-        "The input array is already sorted or nearly sorted when choosing the first or last element as pivot; mitigated by using randomized pivot selection or the Median-of-Three strategy",
-        "The array size exceeds 2^32 elements; mitigated by upgrading from 32-bit to 64-bit indices",
-        "All elements are powers of two causing integer overflow in the partition index"
+        "Variable-size Sliding Window with two pointers and a character frequency map",
+        "Monotonic Stack popping smaller characters",
+        "Recursive Backtracking generating all substring combinations",
+        "Dijkstra's Shortest Path algorithm"
       ],
-      correctIndex: 1,
-      explanation: "When the pivot is consistently chosen as the extremum (first or last element) in already sorted or identical-key inputs, partitioning splits the array into sizes 0 and n-1, producing an O(n²) recursion tree. Choosing randomized pivots or median-of-three guarantees balanced partitions with high probability."
+      correctIndex: 0,
+      explanation: "A variable-size Sliding Window expands the right pointer to include characters and contracts the left pointer whenever the distinct character count exceeds K, visiting each element at most twice for O(N) total time."
     },
     {
-      question: "A latency-critical microservice monitors network routing across an unweighted graph of microservice nodes. What is the most computationally efficient algorithm to determine the minimum number of network hops between two services?",
+      question: "What is the tight worst-case time complexity of constructing a binary heap (bottom-up heapify or Floyd's build-heap algorithm) from an unsorted array of N elements?",
       options: [
-        "Depth First Search (DFS) with recursive backtracking",
-        "Breadth First Search (BFS) starting from the source service node",
-        "Bellman-Ford algorithm with edge relaxation over V iterations",
-        "Prim's greedy minimum spanning tree algorithm"
+        "O(N log N)",
+        "O(N)",
+        "O(log N)",
+        "O(N²)"
       ],
       correctIndex: 1,
-      explanation: "In an unweighted graph, BFS explores vertices layer by layer (by distance 1, 2, 3 hops). The first time the destination node is visited, the path is guaranteed to be the shortest hop path in O(V + E) time, whereas DFS may traverse deep suboptimal branches first."
+      explanation: "Inserting N elements one by one takes O(N log N). However, Floyd's bottom-up heapify runs siftDown starting from the lowest internal nodes. Summing node heights (N/4 · 1 + N/8 · 2 + ...) mathematically converges to O(N) linear time."
     },
     {
-      question: "You need to compute the maximum sum of any contiguous subarray of size k across a real-time stream of 10 million telemetry events. How should you structure your algorithm for optimal performance?",
+      question: "You are given an array of daily temperatures. For each day, you need to find how many days you would have to wait until a warmer temperature occurs (Next Greater Element variant). To achieve an optimal O(N) total time complexity, which data structure pattern should you implement?",
       options: [
-        "Iterate through every starting index and run an inner loop summing the subsequent k elements in O(n · k) time",
-        "Maintain a sliding window of size k: calculate the initial window sum, then slide forward by adding the new incoming element and subtracting the element leaving the window in O(1) per step, yielding O(n) total time",
-        "Sort the entire telemetry array first in O(n log n) and select the top k elements",
-        "Construct a binary search tree of all prefixes and execute range interval queries in O(n log k)"
+        "Balanced Binary Search Tree",
+        "Max-Heap / Priority Queue updated on every day",
+        "Circular FIFO Queue",
+        "Monotonic Decreasing Stack storing indices of unresolved temperatures"
       ],
-      correctIndex: 1,
-      explanation: "The Sliding Window pattern avoids recalculating duplicate overlapping subsegments. Shifting the window requires only 1 addition and 1 subtraction, processing each element in O(1) time with O(1) auxiliary space."
+      correctIndex: 3,
+      explanation: "A Monotonic Decreasing Stack stores indices of temperatures waiting for a warmer day. When a warmer temperature is encountered, unresolved indices are popped. Each index is pushed and popped at most once, yielding O(N) time."
     },
     {
-      question: "When finding the Top K most frequent search queries in a large dataset of N terms, which approach minimizes memory usage while achieving O(N log K) time complexity?",
+      question: "What is the time complexity to search for a target value in a sorted array of N distinct integers that has been rotated at an unknown pivot index?",
       options: [
-        "Sort all N unique elements using MergeSort in O(N log N) time and slice the first K elements",
-        "Count frequencies into a Hash Map, then maintain a Min-Heap of size K: if an incoming frequency exceeds the heap root, pop the root and insert the new element",
-        "Construct a complete Max-Heap of all N elements and perform K extract-max operations",
-        "Insert all queries into a Singly Linked List and execute linear scan K times"
+        "O(log N)",
+        "O(N)",
+        "O(1)",
+        "O(N log N)"
       ],
-      correctIndex: 1,
-      explanation: "Maintaining a Min-Heap capped at size K ensures heap operations take O(log K) rather than O(log N). The heap root always holds the K-th largest frequency seen so far, keeping memory bounded strictly to O(K) rather than retaining all N elements in a heap."
+      correctIndex: 0,
+      explanation: "At any midpoint, at least one half of the rotated array is guaranteed to be strictly sorted. By checking if the target lies within the boundaries of the sorted half, modified Binary Search eliminates half the search space each step in O(log N) time."
     },
     {
-      question: "You are building a search autocomplete service that must support prefix matching against 500,000 dictionary words. Why is a Trie (Prefix Tree) architecturally superior to a Hash Map for this feature?",
+      question: "You are designing a build pipeline that compiles thousands of software modules with interdependencies. You need to verify if the dependency graph contains circular dependencies, and if not, produce a valid sequential build order. Which algorithm should you run?",
       options: [
-        "Tries use zero memory overhead compared to primitive strings",
-        "A Trie allows finding all words sharing a common prefix of length L in O(L + M) time (where M is the number of matching words), whereas a Hash Map cannot search prefixes without scanning all keys",
-        "Hash Maps cannot store alphanumeric strings longer than 32 characters due to hashing limits",
-        "Tries execute search queries concurrently without thread locking"
+        "Kruskal's Minimum Spanning Tree algorithm",
+        "Topological Sort using Kahn's Algorithm (in-degree tracking via BFS) or DFS with 3-color cycle detection",
+        "Floyd-Warshall all-pairs shortest path",
+        "QuickSelect partitioning"
       ],
       correctIndex: 1,
-      explanation: "A Hash Map only supports exact key lookups (O(1)). Searching for prefixes like 'eng*' in a Hash Map requires scanning all keys in O(N). A Trie navigates directly to the prefix node in O(L) steps and traverses descendants to produce completions."
+      explanation: "Dependency graphs are Directed Acyclic Graphs (DAGs). Kahn's Algorithm computes vertex in-degrees and enqueues nodes with in-degree 0. If processed vertices < total vertices, a cycle is detected. Otherwise, the processing sequence is a valid topological sort."
     },
     {
-      question: "In deeply nested trees or graphs with depths up to 100,000, recursive Depth First Search causes JVM/V8 Call Stack Overflow errors. How should an engineer rewrite the traversal to safely handle arbitrary depths?",
+      question: "In a Hash Table that resolves collisions using separate chaining with singly linked lists, what is the worst-case time complexity of searching for an existing key when N elements are stored in the table?",
       options: [
-        "Increase CPU clock frequency to accelerate stack frame clearance",
-        "Convert the recursive traversal to an iterative DFS using an explicit heap-allocated Stack data structure",
-        "Switch the recursive calls to execute within JavaScript setTimeout closures",
-        "Split the tree across multiple threads without synchronizing nodes"
+        "O(1)",
+        "O(log N)",
+        "O(N)",
+        "O(N²)"
       ],
-      correctIndex: 1,
-      explanation: "Call stacks have strict memory limits (typically 1MB-8MB), overflowing after a few thousand frames. Moving recursion to an iterative loop with an explicit heap-allocated Stack (or Queue for BFS) removes the call stack limitation, safely utilizing available heap memory."
+      correctIndex: 2,
+      explanation: "Under uniform hashing, average lookup is O(1). However, in the worst case (e.g. hash collision attack or degenerate hash function), all N keys hash to the same bucket, creating a single linked list of length N that takes O(N) time to traverse."
     },
     {
-      question: "You are designing a rate-limiting algorithm that restricts client requests to 100 requests per minute with smooth burst handling. What is the fundamental difference between the Token Bucket and Fixed Window Counter algorithms?",
+      question: "You need to determine whether a singly linked list contains a cycle and locate the node where the cycle starts using strictly O(1) auxiliary memory without modifying node values. Which algorithm satisfies these requirements?",
       options: [
-        "Fixed Window counters allow burst traffic to scale indefinitely without tracking limits",
-        "Fixed Window counters suffer from the 2x burst boundary problem (allowing up to 200 requests across a boundary transition), whereas Token Bucket refuels continuously and smooths burst spikes",
-        "Token Bucket requires O(n) memory per request while Fixed Window requires zero memory",
-        "Token Bucket rejects all requests that arrive within 10 milliseconds of each other"
+        "Floyd's Cycle-Finding Algorithm (Tortoise and Hare two pointers)",
+        "Breadth-First Search with an in-memory visited Set",
+        "Binary Search on node memory pointers",
+        "Topological Sort"
+      ],
+      correctIndex: 0,
+      explanation: "Floyd's algorithm uses a slow pointer (1 step) and fast pointer (2 steps). If they meet, a cycle exists. Resetting one pointer to head and moving both at 1 step locates the cycle start in O(N) time and O(1) space."
+    },
+    {
+      question: "What is the time complexity of Dijkstra's single-source shortest path algorithm on a graph with V vertices and E edges with non-negative weights, implemented using an adjacency list and a binary min-heap?",
+      options: [
+        "O(V²)",
+        "O((V + E) log V)",
+        "O(V · E)",
+        "O(E log E + V²)"
       ],
       correctIndex: 1,
-      explanation: "Fixed Window resets counts at fixed intervals, meaning 100 requests at 0:59 followed by 100 requests at 1:01 yields 200 requests within 2 seconds. Token Bucket refuels tokens at a constant rate, accommodating transient bursts up to bucket capacity while enforcing a smooth long-term rate."
+      explanation: "Each vertex is extracted from the binary min-heap at most once (V log V), and each edge relaxation can result in a priority queue update/push (E log V), yielding a total time of O((V + E) log V)."
+    },
+    {
+      question: "You are given an integer array containing both positive and negative numbers, and an integer K. You need to count the total number of continuous subarrays whose sum equals K in O(N) time. Which technique should you use?",
+      options: [
+        "Fixed-size Sliding Window",
+        "Two Pointers converging from opposite ends",
+        "Prefix Sum combined with a Hash Map storing frequencies of cumulative sums",
+        "Greedy selection of maximum elements"
+      ],
+      correctIndex: 2,
+      explanation: "Because numbers can be negative, subarray sums are not monotonic, so two pointers or sliding windows fail. Storing cumulative prefix sums in a Hash Map allows checking if (prefixSum - K) has been seen in O(1) per element, solving the problem in O(N) time."
+    },
+    {
+      question: "What is the tight time complexity of finding the Next Greater Element for all N elements in an array using a Monotonic Stack?",
+      options: [
+        "O(N)",
+        "O(N²)",
+        "O(N log N)",
+        "O(log N)"
+      ],
+      correctIndex: 0,
+      explanation: "Although there is a while loop inside the iteration, each element is pushed onto the stack exactly once and popped at most once across the entire algorithm, making the amortized total time strictly O(N)."
+    },
+    {
+      question: "You are required to find the K-th smallest element in an unsorted array of N elements in O(N) average time without sorting the entire array. Which algorithm should you apply?",
+      options: [
+        "MergeSort with early termination",
+        "QuickSelect (Hoare's Selection Algorithm)",
+        "Binary Search on array indices",
+        "Kruskal's Algorithm"
+      ],
+      correctIndex: 1,
+      explanation: "QuickSelect uses the partition step of QuickSort. Instead of recursing into both sides, it recurses only into the partition containing the K-th index, achieving an average time complexity of O(N)."
+    },
+    {
+      question: "What is the amortized time complexity per operation for Disjoint Set Union (DSU) when both Path Compression and Union by Rank heuristics are implemented?",
+      options: [
+        "O(log N)",
+        "O(N)",
+        "O(α(N)), where α is the Inverse Ackermann function (effectively O(1))",
+        "O(1) strictly worst-case"
+      ],
+      correctIndex: 2,
+      explanation: "With both path compression and union by rank, any sequence of M operations on N elements takes O(M · α(N)) time, where α is the inverse Ackermann function, which is practically bounded by 4 for all realistic inputs."
+    },
+    {
+      question: "What is the time complexity to search for a word of length L in a Trie (Prefix Tree) that contains N total words and M total characters?",
+      options: [
+        "O(L)",
+        "O(N)",
+        "O(M)",
+        "O(log N)"
+      ],
+      correctIndex: 0,
+      explanation: "Searching in a Trie requires following one pointer per character of the query word. The operation takes O(L) time where L is the length of the query word, completely independent of the total number of words N stored in the Trie."
+    },
+    {
+      question: "You are designing a service that ingests a continuous real-time stream of numeric values. The service must support inserting incoming numbers in O(log N) time and retrieving the exact running median in O(1) time. Which technique should you implement?",
+      options: [
+        "A sorted dynamic array with binary search insertion",
+        "Two Heaps: a Max-Heap for the lower half and a Min-Heap for the upper half, kept balanced in size",
+        "A Hash Table storing running counts",
+        "A Monotonic Stack"
+      ],
+      correctIndex: 1,
+      explanation: "Maintaining a Max-Heap for the smaller half of numbers and a Min-Heap for the larger half allows extracting the median from the root(s) in O(1) time while each insertion takes O(log N) heap balance time."
+    },
+    {
+      question: "What is the time complexity of the optimal algorithm to find the length of the Longest Increasing Subsequence (LIS) in an unsorted array of N numbers using Patience Sorting?",
+      options: [
+        "O(N²)",
+        "O(N log N)",
+        "O(N)",
+        "O(2^N)"
+      ],
+      correctIndex: 1,
+      explanation: "Simple DP takes O(N²). Patience sorting maintains a tails array where tails[i] stores the smallest tail of all increasing subsequences of length i+1. Using binary search to update tails for each element yields O(N log N) time."
+    },
+    {
+      question: "You are given an undirected graph and a continuous stream of incoming edge connections. You need to determine whether adding each edge creates a cycle or connects two previously disconnected components in near-constant time. Which data structure should you use?",
+      options: [
+        "Adjacency Matrix with BFS traversal after each edge",
+        "Binary Search Tree",
+        "Disjoint Set Union (DSU / Union-Find)",
+        "Segment Tree"
+      ],
+      correctIndex: 2,
+      explanation: "Disjoint Set Union tracks connected components. If find(u) == find(v) before unioning, adding edge (u, v) creates a cycle. Otherwise, union(u, v) merges the sets in near O(1) amortized time."
+    },
+    {
+      question: "What is the auxiliary space complexity of finding the longest substring without repeating characters in a string of length N over an alphabet of size Σ (e.g. ASCII or Unicode) using the Sliding Window pattern with a hash map?",
+      options: [
+        "O(min(N, |Σ|))",
+        "O(N²)",
+        "O(1) strictly for all arbitrary alphabets",
+        "O(N log N)"
+      ],
+      correctIndex: 0,
+      explanation: "The sliding window hash map stores at most one entry per unique character currently present within the window. The number of keys is bounded both by the string length N and the total unique alphabet size |Σ|, giving O(min(N, |Σ|)) auxiliary space."
     }
   ],
 

@@ -5,10 +5,9 @@ export function ThemeToggle() {
   const [isDark, setIsDark] = useState<boolean>(false);
 
   useEffect(() => {
-    // Check initial preference: saved in localStorage or system dark mode
+    // Check initial preference: default to light mode unless saved as dark
     const saved = localStorage.getItem("mockmate_theme");
-    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const initialDark = saved ? saved === "dark" : systemPrefersDark;
+    const initialDark = saved === "dark";
 
     setIsDark(initialDark);
     if (initialDark) {

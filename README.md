@@ -1,214 +1,234 @@
-# MockMate — AI Mock Interview Platform for Tech Placements
+<div align="center">
 
-[![Live Production](https://img.shields.io/badge/Production-Live_on_Vercel-blue?style=for-the-badge&logo=vercel)](https://mockmate-phi-gray.vercel.app)
-[![Tech Stack](https://img.shields.io/badge/Stack-TanStack_Start_%2B_React_19_%2B_Supabase_%2B_Clerk-6366f1?style=for-the-badge)](https://mockmate-phi-gray.vercel.app)
-[![License](https://img.shields.io/badge/License-MIT-emerald?style=for-the-badge)](LICENSE)
+<img src="assets/hero.gif" alt="MockMate — AI Voice Technical Interviewer" width="100%">
 
-> **The AI-powered placement interview coach engineered for CS students and freshers to ace high-stakes technical interviews in DSA, Spring Boot, System Design (HLD), and Low-Level Design (LLD).**
->
-> 🌐 **Live Demo:** [https://mockmate-phi-gray.vercel.app](https://mockmate-phi-gray.vercel.app)  
-> 📖 **Quick Setup Guide:** See [HOW_TO_RUN.md](file:///home/nrishan/Documents/projects/MGT-PROJECT/HOW_TO_RUN.md) for local dev instructions and free API keys setup.
+<br>
 
----
+[![Live Demo](https://img.shields.io/badge/Live_Demo-mockmate--phi--gray.vercel.app-2563EB?style=for-the-badge&logo=vercel&logoColor=white)](https://mockmate-phi-gray.vercel.app)
+[![Tech Stack](https://img.shields.io/badge/TanStack_Start-React_19-0ea5e9?style=for-the-badge&logo=react&logoColor=white)](#tech-stack)
+[![LLM](https://img.shields.io/badge/Groq-Llama_3.3_70B-7c3aed?style=for-the-badge)](#architecture)
+[![License](https://img.shields.io/badge/License-MIT-10b981?style=for-the-badge)](LICENSE)
 
-## 🚀 One-Line Value Proposition
+### AI voice interviewer for CS students preparing for technical placements.
+Practice DSA, Spring Boot, System Design, and LLD out loud — with real-time feedback, probing follow-ups, and diagnostic scorecards.
 
-**MockMate** transforms technical interview anxiety into placement readiness through conversational voice-based AI mock sessions, canonical campus rubrics, deep scenario-based problem solving, and cross-session readiness tracking.
+[**Launch Web App**](https://mockmate-phi-gray.vercel.app) · [Product Tour](#product-tour) · [How It Works](#how-it-works) · [Architecture](#architecture) · [Pricing & Economics](#pricing--unit-economics) · [Run Locally](#local-setup)
 
----
-
-## 📌 The Problem & Market Opportunity
-
-Over **1.5 million engineering students** graduate in India annually. During campus hiring season (TCS Digital, Infosys SP, Amazon, Tier-1/2 product companies, and fast-growing tech startups), **over 75% of candidates get eliminated in technical interview rounds**.
-
-- **Not a Coding Deficit, but an Articulation Deficit:** Students grind LeetCode questions in silence, but stumble when asked to verbally walk through time/space trade-offs, defend concurrency boundaries, or explain system architectures.
-- **Human Mentorship is Expensive & Unscalable:** Professional 1-on-1 mock interviews cost ₹2,000–₹5,000 per session—completely out of reach for average college students.
-- **Generic AI Chatbots Fall Short:** ChatGPT gives away solutions immediately rather than maintaining an authentic, rigorous, probing interviewer persona.
+</div>
 
 ---
 
-## 💡 The MockMate Solution
+## Why MockMate?
 
-MockMate bridges the gap between solitary coding practice and real high-stakes campus interviews:
+LeetCode and GeeksforGeeks teach you how to write code in a silent browser tab. Real campus placement interviews test something completely different: **whether you can think and articulate under pressure while someone evaluates your approach.**
 
-1. **Conversational Voice Interviews:** Powered by Microsoft Edge TTS for natural, human-like voice narration and Web Speech API for candidate speech input with a live audio visualizer.
-2. **Resilient Speech Engine:** Client-side 4.5s race timeout with neural browser voice fallback and dedicated "Replay Audio" control.
-3. **Curated Canonical Domains & Deep Scenarios:**
-   - **Data Structures & Algorithms (DSA):** Cyclic graphs, DP memoization, BST balancing, sliding window edge cases.
-   - **Spring Boot & Java Backend:** IoC/DI, JPA N+1 query problem, `@Transactional` isolation, Actuator metrics, HikariCP tuning.
-   - **System Design (HLD):** CAP theorem, consistent hashing, distributed caching, rate limiters, database sharding.
-   - **Low-Level Design (LLD):** SOLID principles, design patterns (Factory, Strategy, Observer, Decorator), clean class diagrams.
-4. **Multi-Metric Evaluation Engine:** Instant diagnostic scorecards covering Technical Depth, Communication, Problem Solving, strengths, weaknesses, and actionable recommendations.
-5. **Cross-Session Placement Readiness Score:** A proprietary diagnostic algorithm aggregating cross-session performance, domain coverage, and consistency into a 0–100% readiness rating.
-6. **Student-Friendly Freemium Model:**
-   - **5 Free Voice Mock Interviews / Month** (auto-resets every calendar month).
-   - **Unlimited Concept & MCQ Quizzes** (100% free and unlimited, never consumes interview quotas).
-   - **MockMate Pro (₹199 / month · 70% Student Discount):** Unlimited voice interviews with Stripe Checkout (Credit/Debit Cards + UPI dynamic payment methods).
+When companies like Amazon, TCS Digital, Infosys SP, and product startups conduct technical rounds, over **75% of candidates are rejected** in the verbal problem-solving stage. Most of the time, it is not because the candidate didn't know the logic. It is because:
+
+1. **They can't speak their thought process:** They jump straight into code without explaining their approach, time/space trade-offs, or edge cases out loud.
+2. **1-on-1 human mocks are too expensive:** Platforms charge ₹2,000 to ₹5,000 per mock session, making regular practice unaffordable for most college students.
+3. **Chatbots don't act like interviewers:** Standard LLM chats hand over the solution after one prompt instead of pushing you to justify decisions, handle follow-ups, and defend trade-offs.
+
+MockMate runs full voice-based mock interviews with an adaptive AI interviewer that listens, asks follow-up questions, points out weak spots, and tracks your readiness across rounds.
 
 ---
 
-## ⚡ Technical Architecture & System Design
+## Product Tour
+
+<div align="center">
+<img src="assets/product-tour.gif" alt="MockMate product walkthrough" width="90%">
+</div>
+
+- **Voice & Speech Recognition:** The interviewer asks questions using neural Edge TTS voices (`en-US-ChristopherNeural`, `Jenny`, `Guy`, `Prabhat`). You answer out loud using browser speech recognition with real-time waveform visualization.
+- **Dynamic Question Progression:** Each interview runs 5 rounds. For DSA, questions actively balance fundamental patterns (Two Pointers, Sliding Window, and Hashing) before diving into Trees, Graphs, and Dynamic Programming.
+- **Concept Quizzes:** Practice targeted multiple-choice questions focused on algorithm identification and Big-O complexity analysis, with randomized option distribution on every attempt.
+- **Cross-Session Placement Readiness:** Your performance aggregates into a 0–100% readiness score with domain-specific breakdowns so you know where you stand before interview day.
+
+---
+
+## Technical Tracks
+
+MockMate covers the four core areas tested in university campus drives and junior SWE interviews:
+
+| Track | Key Areas Tested |
+|---|---|
+| **Data Structures & Algorithms** | Two Pointers (3Sum, Container With Most Water), Sliding Window (min window substring, distinct counts), Hashing & Prefix Sums (subarray sum equals K), Monotonic Stacks, Binary Search on answer space, Trees, Graphs, and DP. |
+| **Spring Boot & Java Backend** | IoC and Bean lifecycles, Hibernate/JPA N+1 queries, `@Transactional` proxy boundaries and rollback rules, Spring Security filters, Actuator hardening, and Java 21 Virtual Threads. |
+| **System Design (HLD)** | CAP theorem trade-offs, Consistent Hashing ring rebalancing, Cache stampede mitigation, distributed rate limiters (Token Bucket), Kafka partition ordering, and database sharding. |
+| **Low-Level Design (LLD)** | SOLID principles in practice, design patterns (Strategy, Decorator, Observer, Command, Composite), concurrency hazards (Double-Checked Locking, thread safety), and object-oriented modeling. |
+
+---
+
+## How It Works
+
+<div align="center">
+<img src="assets/scorecard.gif" alt="Mock interview transcript and evaluation scorecard" width="90%">
+</div>
+
+1. **Start the Session:** Select a domain and start your interview. The system deducts 1 session from your monthly quota (5 free sessions per month, auto-renewed).
+2. **Listen to the Problem:** The interviewer speaks the problem scenario aloud. A 10-second client race timeout guarantees audio playback even if network latency spikes, with a 1-click audio replay option.
+3. **Speak Your Solution:** Hit the microphone or use keyboard shortcuts to explain your reasoning, time complexity, and data structure choices.
+4. **Defend Follow-Ups:** The AI evaluates your answer and pushes you on corner cases, alternative approaches, or complexity trade-offs before moving to the next round.
+5. **Get Graded:** Upon finishing, you receive a diagnostic scorecard covering **Technical Depth**, **Communication**, and **Problem Solving** alongside actionable feedback and recommendations.
+
+---
+
+## Architecture
+
+<div align="center">
+<img src="assets/pipeline.gif" alt="Real-time interview pipeline" width="100%">
+</div>
 
 ```mermaid
 graph TD
-    A[Student / Candidate] -->|Sign In / Google OAuth| B(Clerk Auth)
-    A -->|Selects Domain| C[Dashboard & Readiness Overview]
-    C -->|Starts Practice| D{Freemium Session Check}
-    D -->|Free Limit Reached & Non-Pro| E[Pricing Page / Stripe Checkout]
-    D -->|Eligible / Pro| F[Interview or Quiz Mode]
-
-    subgraph "Real-Time Interview Engine"
-    F --> G[Web Speech Recognition / Text Input]
-    G --> H[TanStack Server Functions]
-    H --> I{3-Tier LLM Router}
-    I -->|1. Primary - 500 tok/sec| J[Groq: Llama 3.3 70B]
-    I -->|2. Local Offline Fallback| K[Ollama: mistral:7b]
-    I -->|3. Cloud Free Tier| L[Google Gemini 2.0 Flash]
-    J --> M[Edge TTS Voice Synthesizer]
-    K --> M
-    L --> M
-    M --> N[Base64 MP3 Audio Stream]
-    N --> A
+    User([Candidate]) -->|Voice / Text Input| Client[TanStack Start Web App]
+    Client -->|Clerk Session / Google OAuth| Auth[Authentication]
+    Client -->|Quota Check| DB[(Supabase PostgreSQL)]
+    
+    subgraph Execution [Server-Side Runtime]
+        Client -->|Server Function| RouteHandler[Interview Engine]
+        RouteHandler -->|Prompt + KB Context| LLM{3-Tier LLM Router}
+        LLM -->|1. Primary ~500 tok/s| Groq[Groq · Llama 3.3 70B]
+        LLM -->|2. Local Offline Fallback| Ollama[Ollama · mistral:7b]
+        LLM -->|3. Cloud Free Fallback| Gemini[Google Gemini 2.0 Flash]
+        
+        Groq --> SpeechService[Edge TTS Audio Generator]
+        Ollama --> SpeechService
+        Gemini --> SpeechService
+        SpeechService -->|Local CLI / WebSocket| AudioStream[Base64 MP3 Stream]
     end
 
-    subgraph "Data & Persistence Layer"
-    F -->|Session Finish| O[Record Session to Supabase Postgres]
-    O --> P[Update user_profiles & session_history]
-    P --> Q[Recalculate Placement Readiness Score]
-    end
+    AudioStream -->|Audio Playback| Client
+    Client -->|Session Complete| ScoreEngine[Evaluation Engine]
+    ScoreEngine -->|Write Scorecard| DB
 ```
 
-### Key Technical Innovations
+### Tech Stack
 
-| Layer | Technology | Why It Matters |
+- **Frontend & Full-Stack Framework:** [TanStack Start](https://tanstack.com/start) on React 19 and Nitro server engine for SSR hydration and type-safe server functions.
+- **Styling & UI:** Tailwind CSS v4 with an engineering-focused grid layout, custom card translucency, and full light/dark mode support (defaults to light mode).
+- **LLM Inference:** Primary router powered by [Groq](https://groq.com) running `llama-3.3-70b-versatile` (~500 tokens/sec), with fallbacks to local [Ollama](https://ollama.com) and [Google Gemini 2.0 Flash](https://ai.google.dev/).
+- **Voice Synthesis:** Microsoft Edge TTS running locally via CLI and WebSocket fallback for natural human speech without paid third-party voice APIs.
+- **Database & Storage:** [Supabase](https://supabase.com) PostgreSQL with Row-Level Security, automated monthly quota resets, and indexing.
+- **Authentication:** [Clerk](https://clerk.com) with Google OAuth, email authentication, and an instant zero-config Demo Mode for previewing without setup.
+- **Payments:** [Stripe Checkout](https://stripe.com) supporting credit cards, debit cards, and UPI.
+
+---
+
+## Pricing & Unit Economics
+
+MockMate uses a student-first freemium model designed to keep operational costs low while remaining accessible.
+
+| Feature | Free Starter | MockMate Pro |
 |---|---|---|
-| **Full Stack Framework** | **TanStack Start + React 19 + Nitro** | SSR hydration, type-safe full-stack server functions, and instant sub-second page transitions. |
-| **Voice Synthesis** | **Microsoft Edge TTS + Browser Fallback** | 100% free natural neural voice (`en-US-AriaNeural`), zero external audio API fees, with a 4.5s client-side timeout fallback. |
-| **LLM Router** | **Groq → Ollama → Gemini 2.0 Flash** | 3-tier failover with a 30s deadline. Groq provides ultra-fast inference (~500 tok/sec) for conversational latency. |
-| **Authentication** | **Clerk** | Drop-in Google OAuth & Email auth with custom session bridge and zero-config 1-click Demo mode. |
-| **Database & Quotas** | **Supabase PostgreSQL** | Schema with automated `last_reset_date` monthly resets, RLS policies, and performance indexes. |
-| **Monetization** | **Stripe Checkout** | Dynamic payment methods supporting Cards + UPI AutoPay for student affordability. |
-| **Design System** | **Tailwind CSS v4 + Technical Grid** | High-contrast Slate & Cobalt Blue theme with visible 40px grid backdrop, glassmorphism cards, and full light/dark support. |
+| **Monthly Price** | **₹0** | **₹199 / month** (70% student discount) |
+| Voice Mock Interviews | 5 / month (auto-resets every month) | **Unlimited** |
+| Algorithm & MCQ Quizzes | Unlimited (never uses credits) | **Unlimited** |
+| All 4 Interview Tracks | Included | Included |
+| Core Evaluation Scorecards | Included | Included |
+| Inference Priority | Standard | Priority Llama 3.3 70B |
+| Articulation & Communication Diagnostics | Basic | In-depth |
+| Readiness Score History | Included | Included |
+
+- **Unit cost per free user:** ~₹0.15/month (leveraging Groq free tier quotas and free Edge TTS synthesis).
+- **Gross margin on Pro:** Over 92% due to low-latency serverless routing and open voice generation.
 
 ---
 
-## 💰 Business Model: Freemium Unit Economics
+## Database Schema & Administration
 
-MockMate operates on a high-margin, scalable freemium SaaS model tailored for college students:
+The application uses Supabase PostgreSQL. Schema definitions live in [`supabase/schema.sql`](supabase/schema.sql).
 
-- **Free Tier (Monthly Student Starter):**
-  - **5 Full Voice Mock Interviews / Month** (automatically resets every month).
-  - **Unlimited Concept & MCQ Quizzes** across all 4 domains.
-  - Standard Edge TTS voice interviewer & core scorecards.
-  - Serverless cost per active free user: ~₹0.15 (Groq free tier + Edge TTS serverless compute).
+- **`user_profiles`**: Stores candidate profile, plan (`free` | `pro`), monthly `free_sessions_used`, remaining `credits`, and `last_reset_date`.
+- **`session_history`**: Stores records of finished interviews and quizzes, including domain, duration, score metrics, and feedback.
 
-- **MockMate Pro (₹199 / month — 70% Student Discount from ₹699):**
-  - Unlimited voice mock interviews across all 4 tracks.
-  - Priority Groq Llama 3.3 70B model execution.
-  - Granular communication & articulation metrics.
-  - Comprehensive Placement Readiness Score & personalized weakness drilldowns.
-  - **Gross Margin: >92%** due to highly optimized inference routing and free Edge TTS synthesis.
+### Managing User Plans (Admin SQL)
 
----
+To manually upgrade or reset a user account directly from the Supabase SQL editor:
 
-## 🗄️ Database Schema & Admin Controls
-
-The database runs on **Supabase PostgreSQL**. The complete schema is defined in [supabase/schema.sql](file:///home/nrishan/Documents/projects/MGT-PROJECT/supabase/schema.sql).
-
-### Tables:
-1. **`user_profiles`**: Tracks `clerk_user_id`, `email`, `name`, `plan` (`free` | `pro`), `free_sessions_used`, `credits` (default `5`), and `last_reset_date` (for automatic monthly reset).
-2. **`session_history`**: Tracks completed mock interviews and quizzes with `score`, `feedback`, `domain`, and `duration_seconds`.
-
-### Manual User Plan Upgrades (Admin Guide)
-
-To upgrade any specific user to `pro` directly:
-
-#### Option A: Supabase Visual Table Editor
-1. Go to **Supabase Dashboard** → **Table Editor** → `user_profiles`.
-2. Locate the user by email or ID.
-3. Double-click the `plan` column, change `free` to `pro`, and press Enter.
-
-#### Option B: Supabase SQL Editor
 ```sql
--- Upgrade user to Pro by email:
+-- Upgrade candidate to Pro
 UPDATE public.user_profiles
 SET plan = 'pro'
-WHERE email = 'user@example.com';
+WHERE email = 'student@example.com';
 
--- Reset user monthly free sessions back to 5:
+-- Reset free monthly sessions back to 5
 UPDATE public.user_profiles
 SET free_sessions_used = 0, credits = 5, last_reset_date = NOW()
-WHERE email = 'user@example.com';
+WHERE email = 'student@example.com';
 ```
 
 ---
 
-## 🛠️ Local Development Setup
+## Local Setup
 
-### 1. Prerequisites
-- Node.js 18+ (tested on Node v20/v22/v24)
-- npm or bun
+### 1. Requirements
+- Node.js 18+ (tested on Node 20, 22, and 24)
+- npm, pnpm, or bun
+- Python 3 with `edge-tts` (optional, for local neural speech synthesis): `pip install edge-tts`
 
-### 2. Clone and Install
+### 2. Installation
 ```bash
 git clone https://github.com/njd07/mockmate.git
 cd mockmate
 npm install --ignore-scripts --no-audit --no-fund
 ```
 
-### 3. Environment Variables Configuration
+### 3. Environment Variables
 Create a `.env` file in the project root:
 
 ```env
-# ─── 1. LLM API Keys (At least one is required) ───
-GROQ_API_KEY=gsk_your_groq_key
-GEMINI_API_KEY=AIzaSy_your_gemini_key
+# LLM Providers (at least one required)
+GROQ_API_KEY=gsk_your_groq_api_key
+GEMINI_API_KEY=AIzaSy_your_gemini_api_key
 
-# ─── 2. Clerk Authentication ───
+# Clerk Authentication (optional for local demo)
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_key
 CLERK_SECRET_KEY=sk_test_your_clerk_secret
 
-# ─── 3. Supabase Postgres Database ───
+# Supabase PostgreSQL (optional for local demo)
 SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# ─── 4. Stripe (Cards + UPI) ───
+# Stripe Payments (optional)
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable
 STRIPE_PRICE_ID=price_your_test_price_id
 ```
 
-> **Zero-Config Demo Mode:**  
-> If Clerk or Supabase credentials are not present during local testing, MockMate automatically activates **Interactive Demo Mode** (1-click candidate login, local memory store, simulated Stripe checkout).
+> **Demo Mode:** If Clerk or Supabase keys are left empty, MockMate boots in **Interactive Demo Mode** with 1-click test login, local memory store, and mock payment checkout so you can explore the entire app immediately.
 
-### 4. Running Locally
+### 4. Running the Dev Server
 ```bash
+# Start local development server (defaults to port 3000 / 8080)
 npm run dev
-```
-The application will start on `http://localhost:3000`.
 
-### 5. Running Automated Checks
-```bash
-# Verify TypeScript compilation
+# Run TypeScript checks
 npx tsc --noEmit
 
-# Production bundle build
+# Test production build
 npm run build
 ```
 
 ---
 
-## 🚢 Deployment to Vercel
+## Deployment
 
-MockMate is deployed to **Vercel** with full SSR and edge API routing:
+MockMate is configured for deployment on [Vercel](https://vercel.com):
 
-1. Push code to GitHub (`main` branch).
-2. Connect your repo in [Vercel Dashboard](https://vercel.com).
-3. Set Framework Preset to **Vite** (Build command: `npm run build`, Output directory: `.vercel/output`).
-4. Add your environment variables in Vercel Project Settings.
-5. Deployments trigger automatically on every `git push`.
+1. Fork or push your repository to GitHub.
+2. Import the project in Vercel.
+3. Select framework preset **Vite**, build command `npm run build`, and output directory `.vercel/output`.
+4. Configure your `.env` variables under Project Settings.
+5. Deploy. Every push to `main` triggers automatic deployment.
 
 ---
 
-## 📄 License
-MIT License. Developed for placement preparation and technology entrepreneurship evaluation.
+## License
+
+MockMate is open-source software licensed under the [MIT License](LICENSE).
+
+<div align="center">
+
+Built by [Nrishan Jyoti Das](https://github.com/njd07) · [Live Demo](https://mockmate-phi-gray.vercel.app)
+
+</div>

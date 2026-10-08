@@ -38,12 +38,12 @@
   --color-success: var(--success);
 }
 
-/* Light Theme (Default: Clean High-Contrast Slate / Tech Blue) */
+/* Light Theme (Default: Clean High-Contrast White / Tech Blue) */
 :root {
   --radius: 0.75rem;
   color-scheme: light;
   
-  --background: #f8fafc;
+  --background: #ffffff;
   --foreground: #0f172a;
   --card: #ffffff;
   --card-foreground: #0f172a;
@@ -53,7 +53,7 @@
   --primary: #2563eb; /* Clean Technical Blue */
   --primary-foreground: #ffffff;
   
-  --secondary: #f1f5f9;
+  --secondary: #f8fafc;
   --secondary-foreground: #1e293b;
   --muted: #f1f5f9;
   --muted-foreground: #64748b;
@@ -72,7 +72,7 @@
   --violet: #4f46e5;
   --success: #10b981;
 
-  --grid-line: rgba(15, 23, 42, 0.085);
+  --grid-line: rgba(15, 23, 42, 0.08);
 }
 
 /* Dark Theme (Deep Obsidian / Technical Navy) */
@@ -121,6 +121,10 @@ html, body {
 
 body {
   overflow-x: hidden;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 36px 36px;
 }
 
 .font-mono { font-family: var(--font-mono); }
@@ -165,7 +169,7 @@ body {
   background-image:
     linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
     linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 36px 36px;
 }
 
 .glow-cyan { border-left: 3px solid var(--cyan); }

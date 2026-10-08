@@ -36,7 +36,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: any; reset: () => void }) {
   console.error(error);
   const router = useRouter();
   useEffect(() => {
@@ -118,7 +118,7 @@ function RootShell({ children }: { children: ReactNode }) {
             __html: `
               try {
                 const saved = localStorage.getItem('mockmate_theme');
-                const dark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const dark = saved === 'dark';
                 if (dark) document.documentElement.classList.add('dark');
                 else document.documentElement.classList.remove('dark');
               } catch (e) {}

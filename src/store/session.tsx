@@ -6,7 +6,7 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-import { getUserStatus } from "@/lib/user.functions";
+import { getUserStatus, startInterviewSession } from "@/lib/user.functions";
 
 export type Settings = {
   voice: boolean;
@@ -20,7 +20,7 @@ export type Settings = {
 
 const DEFAULTS: Settings = {
   voice: true,
-  voiceId: "en-US-AriaNeural",
+  voiceId: "en-US-ChristopherNeural",
   useOllama: false,
   ollamaUrl: "http://localhost:11434",
   ollamaModel: "mistral:7b-instruct-q3_K_M",
@@ -43,6 +43,7 @@ type SessionCtx = {
   remainingFree: number;
   credits: number;
   refreshProfile: () => Promise<void>;
+  consumeSession: (domain: string) => Promise<boolean>;
   settings: Settings;
   setSettings: (s: Partial<Settings>) => void;
   signOut: () => Promise<void>;
@@ -100,16 +101,52 @@ export function SessionProvider({
           name: activeUser.name,
         },
       });
+
+      const localUsedStr = typeof window !== "undefined" ? localStorage.getItem(`mockmate:used:${activeUser.id}`) : null;
+      const localUsed = localUsedStr ? parseInt(localUsedStr, 10) : 0;
+      const serverUsed = res.profile.free_sessions_used || 0;
+      const effectiveUsed = Math.max(serverUsed, isNaN(localUsed) ? 0 : localUsed);
+      const effectiveRemaining = res.isPro ? 999 : Math.max(0, 5 - effectiveUsed);
+
       setIsPro(res.isPro);
-      setFreeSessionsUsed(res.profile.free_sessions_used || 0);
-      setRemainingFree(res.remainingFree);
-      setCredits(res.profile.credits ?? 5);
+      setFreeSessionsUsed(effectiveUsed);
+      setRemainingFree(effectiveRemaining);
+      setCredits(res.isPro ? 999 : Math.max(0, 5 - effectiveUsed));
     } catch (e) {
       console.warn("[Session] Could not fetch profile:", e);
     } finally {
       setLoading(false);
     }
   }, [activeUser?.id, activeUser?.email, activeUser?.name]);
+
+  const consumeSession = useCallback(async (domain: string) => {
+    if (!activeUser?.id || isPro) return true;
+
+    // Optimistically update local session state and storage immediately
+    setFreeSessionsUsed((prev) => {
+      const next = prev + 1;
+      try {
+        localStorage.setItem(`mockmate:used:${activeUser.id}`, String(next));
+      } catch {}
+      return next;
+    });
+    setRemainingFree((prev) => Math.max(0, prev - 1));
+    setCredits((prev) => Math.max(0, prev - 1));
+
+    try {
+      await startInterviewSession({
+        data: {
+          userId: activeUser.id,
+          domain,
+        },
+      });
+      await refreshProfile();
+      return true;
+    } catch (e) {
+      console.warn("[Session] Could not decrement session on server:", e);
+      return false;
+    }
+  }, [activeUser?.id, isPro, refreshProfile]);
 
   useEffect(() => {
     refreshProfile();
@@ -158,6 +195,7 @@ export function SessionProvider({
         remainingFree,
         credits,
         refreshProfile,
+        consumeSession,
         settings,
         setSettings,
         signOut,

@@ -41,7 +41,24 @@ export const generateQuiz = createServerFn({ method: "POST" })
       }
       
       const clean = shuffled.slice(0, data.count);
-      return { ok: true as const, questions: clean };
+
+      // Randomize option order and recalculate correctIndex so answers are evenly distributed across A, B, C, D
+      const randomized = clean.map((q) => {
+        const correctText = q.options[q.correctIndex];
+        const opts = [...q.options];
+        for (let i = opts.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [opts[i], opts[j]] = [opts[j], opts[i]];
+        }
+        const newCorrectIndex = opts.indexOf(correctText);
+        return {
+          ...q,
+          options: opts,
+          correctIndex: newCorrectIndex >= 0 ? newCorrectIndex : 0,
+        };
+      });
+
+      return { ok: true as const, questions: randomized };
     } catch {
       return { ok: false as const, error: "Failed to load quiz" };
     }

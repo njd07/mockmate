@@ -103,6 +103,42 @@ Use a monotonic decreasing stack. Iterate from right to left. For each element, 
 ### Q30. Edit Distance (Levenshtein)
 DP table dp[i][j] = min edits to convert word1[0..i-1] to word2[0..j-1]. If chars match: dp[i][j] = dp[i-1][j-1]. Else: 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1]) for delete, insert, replace. O(m*n) time and space, optimizable to O(min(m,n)) space.
 
+### Q31. Container With Most Water (Two Pointers)
+Given an array of vertical lines, maximize water volume `(right - left) * min(height[left], height[right])`. Initialize two pointers at left=0 and right=n-1. Calculate current area, then greedily advance the pointer with the smaller height inward because keeping the smaller height while decreasing width can never yield a larger area. O(n) time and strictly O(1) auxiliary space.
+
+### Q32. 3Sum — Find all unique triplets summing to zero (Two Pointers)
+Sort array in O(n log n). For each index i, if nums[i] > 0 terminate early. Skip duplicate consecutive values of nums[i]. Use two pointers left = i + 1 and right = n - 1. If sum == 0, record triplet, advance left and decrement right while skipping duplicates. If sum < 0, increment left; if sum > 0, decrement right. Total time O(n²), auxiliary space O(1) beyond sorting.
+
+### Q33. Minimum Window Substring (Sliding Window)
+Find the shortest substring of S containing all characters of T. Maintain target character counts of T and current window counts. Expand right pointer. When the window satisfies all required character frequencies (matched == required), greedily contract the left pointer while preserving validity to minimize length. Record optimal window. Time O(|S| + |T|), space O(|Σ|).
+
+### Q34. Longest Substring with At Most K Distinct Characters (Sliding Window)
+Use a variable-size sliding window with a HashMap of character frequencies. Expand right pointer and increment character count. When map size exceeds K, advance left pointer and decrement frequencies (removing keys that reach 0) until map size <= K. Track maximum window length `right - left + 1`. Time O(n), space O(K).
+
+### Q35. Longest Consecutive Sequence in an Unsorted Array (Hashing)
+Insert all array values into a HashSet in O(n). Iterate through set elements: only start counting a streak if `!set.contains(num - 1)` (guaranteeing `num` is the beginning of a sequence). Count upward `num + 1, num + 2...` while present in set. Each number is visited at most twice across the entire run. Time O(n), auxiliary space O(n).
+
+### Q36. Permutation in String / Find All Anagrams (Sliding Window + Frequency Array)
+Fixed-size sliding window of length |s1|. Use an array `count[26]` to track character frequency differences between s1 and the current window in s2. Slide window across s2 by adding incoming right character and removing outgoing left character, maintaining match count in O(1) per step. Time O(|s2|), space O(1).
+
+### Q37. Continuous Subarray Sum divisible by K (Prefix Sum + Hashing)
+Track running cumulative sum modulo K. Store `remainder -> earliest index` in a HashMap with base case `(0, -1)`. If `prefixSum % k` was previously seen at index j and `i - j >= 2`, the subarray between j+1 and i has a sum that is a multiple of K. Time O(n), space O(min(n, k)).
+
+### Q38. Daily Temperatures / Next Warmer Day (Monotonic Stack)
+Use a monotonic decreasing stack storing indices. Iterate through temperatures: while stack is non-empty and `temp[i] > temp[stack.top()]`, pop index `prev = stack.pop()` and record `answer[prev] = i - prev`. Push current index `i`. Each index is pushed and popped at most once. Time O(n), space O(n).
+
+### Q39. Sliding Window Maximum (Monotonic Deque)
+Maintain a Double-Ended Queue (Deque) storing indices whose corresponding elements are in strictly decreasing order. For each element i: remove indices falling outside window `i - k + 1`. Pop from back of deque while `nums[deque.back()] <= nums[i]`. Push `i`. Deque front is always the maximum element of current window. Time O(n), space O(k).
+
+### Q40. Largest Rectangle in Histogram (Monotonic Stack)
+Maintain a monotonic increasing stack of indices. For each bar, pop while current bar is shorter than the bar at stack top. For the popped bar, height is `heights[popped]`, width is `i - stack.peek() - 1` (or `i` if stack is empty). Compute area and update maximum. Append dummy 0 at the end to flush all remaining stack items. Time O(n), space O(n).
+
+### Q41. Remove Duplicates from Sorted Array / Move Zeroes (Fast & Slow Pointers)
+Slow pointer tracks the write index for valid elements, while fast pointer scans through the array. When `nums[fast]` satisfies the condition (e.g. non-zero or distinct from `nums[slow-1]`), copy value to `nums[slow]` and increment slow. Modifies array in-place with O(n) time and strictly O(1) auxiliary space.
+
+### Q42. 4Sum II (Hashing / Meet in the Middle)
+Given four arrays A, B, C, D of size N, find count of tuples summing to 0. Compute all pairwise sums of A and B, storing sum frequencies in a HashMap in O(N²). Then iterate through all pairs of C and D, looking up `-(c + d)` in the map and adding its count to the answer. Total time O(N²), space O(N²), avoiding naive O(N⁴).
+
 ## Grading Rubric (5 criteria, score each 0-10)
 1. **Correctness of approach** — Does the algorithm actually solve the problem for all valid inputs?
 2. **Time complexity analysis** — Did the candidate state and justify Big-O? Did they consider optimal vs. naive?
