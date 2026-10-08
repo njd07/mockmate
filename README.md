@@ -134,92 +134,123 @@ MockMate uses a student-first freemium model designed to keep operational costs 
 
 ---
 
-## Database Schema & Administration
+## Local Setup & Getting Started
 
-The application uses Supabase PostgreSQL. Schema definitions live in [`supabase/schema.sql`](supabase/schema.sql).
+Follow these steps to clone the repository and run MockMate locally on your machine.
 
-- **`user_profiles`**: Stores candidate profile, plan (`free` | `pro`), monthly `free_sessions_used`, remaining `credits`, and `last_reset_date`.
-- **`session_history`**: Stores records of finished interviews and quizzes, including domain, duration, score metrics, and feedback.
+### 1. Prerequisites
 
-### Managing User Plans (Admin SQL)
+- **Node.js**: Version 18 or higher (tested on Node 20, 22, and 24)
+- **Package Manager**: `npm`, `pnpm`, or `bun`
+- **Optional**: Python 3 with `edge-tts` (`pip install edge-tts`) for local neural voice synthesis (MockMate also includes an automatic fallback).
 
-To manually upgrade or reset a user account directly from the Supabase SQL editor:
+### 2. Clone the Repository
 
-```sql
--- Upgrade candidate to Pro
-UPDATE public.user_profiles
-SET plan = 'pro'
-WHERE email = 'student@example.com';
+```bash
+git clone https://github.com/njd07/mockmate.git
+cd mockmate
+```
 
--- Reset free monthly sessions back to 5
-UPDATE public.user_profiles
-SET free_sessions_used = 0, credits = 5, last_reset_date = NOW()
-WHERE email = 'student@example.com';
+### 3. Install Dependencies
+
+```bash
+npm install --ignore-scripts --no-audit --no-fund
 ```
 
 ---
 
-## Local Setup
+### 4. Running Locally
 
-### 1. Requirements
-- Node.js 18+ (tested on Node 20, 22, and 24)
-- npm, pnpm, or bun
-- Python 3 with `edge-tts` (optional, for local neural speech synthesis): `pip install edge-tts`
+You have two ways to run MockMate:
 
-### 2. Installation
+#### Option A: Quick Start (Zero-Config Demo Mode — Under 30 Seconds)
+
+You can launch and explore MockMate immediately without signing up for external databases, auth providers, or payment gateways:
+
 ```bash
-git clone https://github.com/njd07/mockmate.git
-cd mockmate
-npm install --ignore-scripts --no-audit --no-fund
+npm run dev
 ```
 
-### 3. Environment Variables
-Create a `.env` file in the project root:
+Open your browser at `http://localhost:3000` (or the port indicated in your console).
+
+> **How Demo Mode Works:**  
+> If environment variables are omitted, MockMate automatically activates **Interactive Demo Mode**:
+> - **1-Click Candidate Login**: Test the dashboard and interview flow without setting up Clerk or Google OAuth.
+> - **In-Memory Session Store**: Tracks candidate history and readiness scores during your session.
+> - **Simulated Pro Checkout**: Test subscription flows with mock Stripe payments.
+> - **Voice Synthesis**: Works out-of-the-box using neural Edge TTS voices.
+
+---
+
+#### Option B: Full Setup with Persistent Services (100% Free Tiers)
+
+To connect real persistence, authentication, and custom AI API keys, create a `.env` file in the project root:
+
+```bash
+cp .env.example .env
+```
+
+Populate the environment variables in `.env`:
 
 ```env
-# LLM Providers (at least one required)
+# ─── 1. AI Providers (At least one required) ───
+# Primary provider: Groq (Llama 3.3 70B, ~500 tok/sec) — Get free key at https://console.groq.com
 GROQ_API_KEY=gsk_your_groq_api_key
+
+# Fallback provider: Google Gemini 2.0 Flash — Get free key at https://aistudio.google.com/apikey
 GEMINI_API_KEY=AIzaSy_your_gemini_api_key
 
-# Clerk Authentication (optional for local demo)
+# ─── 2. Authentication (Clerk) ───
+# Get keys at https://dashboard.clerk.com (create application -> API Keys)
 VITE_CLERK_PUBLISHABLE_KEY=pk_test_your_clerk_key
 CLERK_SECRET_KEY=sk_test_your_clerk_secret
 
-# Supabase PostgreSQL (optional for local demo)
+# ─── 3. Database (Supabase PostgreSQL) ───
+# Get keys at https://supabase.com (project settings -> API)
 SUPABASE_URL=https://your-project.supabase.co
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
-# Stripe Payments (optional)
+# ─── 4. Payments (Stripe — Optional) ───
+# Get test keys at https://dashboard.stripe.com/test/apikeys
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret
 VITE_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable
 STRIPE_PRICE_ID=price_your_test_price_id
 ```
 
-> **Demo Mode:** If Clerk or Supabase keys are left empty, MockMate boots in **Interactive Demo Mode** with 1-click test login, local memory store, and mock payment checkout so you can explore the entire app immediately.
+##### Initializing the Database Tables:
+If you are using Supabase:
+1. Go to your **Supabase Dashboard** → **SQL Editor**.
+2. Open [`supabase/schema.sql`](supabase/schema.sql) from this repository.
+3. Paste the SQL script and click **Run**.
+4. This creates the `user_profiles` and `session_history` tables with Row-Level Security and performance indexes.
 
-### 4. Running the Dev Server
+Then start the application:
+
 ```bash
-# Start local development server (defaults to port 3000 / 8080)
+npm run dev
+```
+
+---
+
+### 5. Useful Commands
+
+```bash
+# Start development server with hot reloading
 npm run dev
 
-# Run TypeScript checks
+# Run TypeScript typechecks
 npx tsc --noEmit
 
-# Test production build
+# Build production bundle
 npm run build
 ```
 
 ---
 
-## Deployment
+### 6. Tips & Browser Permissions
 
-MockMate is configured for deployment on [Vercel](https://vercel.com):
-
-1. Fork or push your repository to GitHub.
-2. Import the project in Vercel.
-3. Select framework preset **Vite**, build command `npm run build`, and output directory `.vercel/output`.
-4. Configure your `.env` variables under Project Settings.
-5. Deploy. Every push to `main` triggers automatic deployment.
+- **Microphone Access**: When starting an interview session, grant microphone permission in your browser so the Web Speech API can transcribe your verbal answers in real time.
+- **Audio Output**: If you don't hear the interviewer's voice, ensure system volume is unmuted or click the **"Replay Audio"** button to trigger audio playback.
 
 ---
 
